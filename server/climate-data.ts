@@ -1,0 +1,138 @@
+import type { ClimateData } from "@shared/schema";
+
+const climateDatabase: Record<string, ClimateData> = {
+  africa: {
+    continent: "Africa",
+    co2Emissions: 1.3,
+    temperature: 1.2,
+    renewableEnergy: 18.5,
+    population: 1400000000,
+    yearlyData: [
+      { year: 2015, co2: 1.2, temp: 0.9, renewable: 15.2 },
+      { year: 2016, co2: 1.22, temp: 0.95, renewable: 15.8 },
+      { year: 2017, co2: 1.24, temp: 1.0, renewable: 16.2 },
+      { year: 2018, co2: 1.26, temp: 1.05, renewable: 16.8 },
+      { year: 2019, co2: 1.27, temp: 1.1, renewable: 17.2 },
+      { year: 2020, co2: 1.25, temp: 1.15, renewable: 17.8 },
+      { year: 2021, co2: 1.28, temp: 1.18, renewable: 18.0 },
+      { year: 2022, co2: 1.29, temp: 1.19, renewable: 18.3 },
+      { year: 2023, co2: 1.3, temp: 1.2, renewable: 18.5 },
+    ],
+  },
+  asia: {
+    continent: "Asia",
+    co2Emissions: 17.2,
+    temperature: 1.4,
+    renewableEnergy: 28.3,
+    population: 4700000000,
+    yearlyData: [
+      { year: 2015, co2: 15.8, temp: 1.1, renewable: 22.5 },
+      { year: 2016, co2: 16.0, temp: 1.15, renewable: 23.2 },
+      { year: 2017, co2: 16.3, temp: 1.2, renewable: 24.0 },
+      { year: 2018, co2: 16.6, temp: 1.25, renewable: 25.1 },
+      { year: 2019, co2: 16.8, temp: 1.3, renewable: 26.0 },
+      { year: 2020, co2: 16.5, temp: 1.32, renewable: 26.8 },
+      { year: 2021, co2: 16.9, temp: 1.35, renewable: 27.4 },
+      { year: 2022, co2: 17.0, temp: 1.38, renewable: 27.9 },
+      { year: 2023, co2: 17.2, temp: 1.4, renewable: 28.3 },
+    ],
+  },
+  europe: {
+    continent: "Europe",
+    co2Emissions: 3.8,
+    temperature: 1.5,
+    renewableEnergy: 42.1,
+    population: 750000000,
+    yearlyData: [
+      { year: 2015, co2: 4.2, temp: 1.2, renewable: 32.5 },
+      { year: 2016, co2: 4.1, temp: 1.25, renewable: 34.0 },
+      { year: 2017, co2: 4.0, temp: 1.3, renewable: 35.8 },
+      { year: 2018, co2: 3.95, temp: 1.35, renewable: 37.2 },
+      { year: 2019, co2: 3.9, temp: 1.38, renewable: 38.5 },
+      { year: 2020, co2: 3.7, temp: 1.42, renewable: 39.8 },
+      { year: 2021, co2: 3.75, temp: 1.45, renewable: 40.5 },
+      { year: 2022, co2: 3.78, temp: 1.48, renewable: 41.2 },
+      { year: 2023, co2: 3.8, temp: 1.5, renewable: 42.1 },
+    ],
+  },
+  northamerica: {
+    continent: "North America",
+    co2Emissions: 5.7,
+    temperature: 1.3,
+    renewableEnergy: 21.4,
+    population: 580000000,
+    yearlyData: [
+      { year: 2015, co2: 6.2, temp: 1.0, renewable: 16.8 },
+      { year: 2016, co2: 6.1, temp: 1.05, renewable: 17.5 },
+      { year: 2017, co2: 6.0, temp: 1.1, renewable: 18.2 },
+      { year: 2018, co2: 5.95, temp: 1.15, renewable: 18.9 },
+      { year: 2019, co2: 5.9, temp: 1.2, renewable: 19.5 },
+      { year: 2020, co2: 5.6, temp: 1.22, renewable: 20.0 },
+      { year: 2021, co2: 5.65, temp: 1.25, renewable: 20.5 },
+      { year: 2022, co2: 5.68, temp: 1.28, renewable: 21.0 },
+      { year: 2023, co2: 5.7, temp: 1.3, renewable: 21.4 },
+    ],
+  },
+  southamerica: {
+    continent: "South America",
+    co2Emissions: 1.5,
+    temperature: 1.1,
+    renewableEnergy: 62.3,
+    population: 430000000,
+    yearlyData: [
+      { year: 2015, co2: 1.4, temp: 0.85, renewable: 58.5 },
+      { year: 2016, co2: 1.42, temp: 0.9, renewable: 59.0 },
+      { year: 2017, co2: 1.43, temp: 0.95, renewable: 59.8 },
+      { year: 2018, co2: 1.45, temp: 1.0, renewable: 60.2 },
+      { year: 2019, co2: 1.46, temp: 1.02, renewable: 60.8 },
+      { year: 2020, co2: 1.42, temp: 1.05, renewable: 61.2 },
+      { year: 2021, co2: 1.47, temp: 1.07, renewable: 61.6 },
+      { year: 2022, co2: 1.48, temp: 1.09, renewable: 62.0 },
+      { year: 2023, co2: 1.5, temp: 1.1, renewable: 62.3 },
+    ],
+  },
+  oceania: {
+    continent: "Oceania",
+    co2Emissions: 1.8,
+    temperature: 1.2,
+    renewableEnergy: 24.5,
+    population: 44000000,
+    yearlyData: [
+      { year: 2015, co2: 1.75, temp: 0.95, renewable: 19.2 },
+      { year: 2016, co2: 1.76, temp: 1.0, renewable: 20.0 },
+      { year: 2017, co2: 1.77, temp: 1.05, renewable: 20.8 },
+      { year: 2018, co2: 1.78, temp: 1.08, renewable: 21.5 },
+      { year: 2019, co2: 1.79, temp: 1.12, renewable: 22.2 },
+      { year: 2020, co2: 1.76, temp: 1.15, renewable: 22.8 },
+      { year: 2021, co2: 1.77, temp: 1.17, renewable: 23.4 },
+      { year: 2022, co2: 1.78, temp: 1.19, renewable: 24.0 },
+      { year: 2023, co2: 1.8, temp: 1.2, renewable: 24.5 },
+    ],
+  },
+  antarctica: {
+    continent: "Antarctica",
+    co2Emissions: 0.001,
+    temperature: 2.5,
+    renewableEnergy: 100,
+    population: 1000,
+    yearlyData: [
+      { year: 2015, co2: 0.001, temp: 1.8, renewable: 100 },
+      { year: 2016, co2: 0.001, temp: 1.9, renewable: 100 },
+      { year: 2017, co2: 0.001, temp: 2.0, renewable: 100 },
+      { year: 2018, co2: 0.001, temp: 2.1, renewable: 100 },
+      { year: 2019, co2: 0.001, temp: 2.2, renewable: 100 },
+      { year: 2020, co2: 0.001, temp: 2.3, renewable: 100 },
+      { year: 2021, co2: 0.001, temp: 2.35, renewable: 100 },
+      { year: 2022, co2: 0.001, temp: 2.4, renewable: 100 },
+      { year: 2023, co2: 0.001, temp: 2.5, renewable: 100 },
+    ],
+  },
+};
+
+export function getClimateData(continent: string): ClimateData | undefined {
+  return climateDatabase[continent.toLowerCase()];
+}
+
+export function getAllClimateData(): Record<string, ClimateData> {
+  return climateDatabase;
+}

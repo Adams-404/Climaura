@@ -14,71 +14,71 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  --background: 220 5% 98%;
+  --background: 220 30% 96%;
 
-  --foreground: 220 8% 12%;
+  --foreground: 220 15% 15%;
 
-  --border: 220 8% 88%;
+  --border: 220 20% 85%;
 
-  --card: 220 5% 96%;
+  --card: 220 25% 98%;
 
-  --card-foreground: 220 8% 12%;
+  --card-foreground: 220 15% 15%;
 
-  --card-border: 220 8% 90%;
+  --card-border: 220 20% 88%;
 
-  --sidebar: 220 5% 94%;
+  --sidebar: 220 25% 94%;
 
-  --sidebar-foreground: 220 8% 12%;
+  --sidebar-foreground: 220 15% 15%;
 
-  --sidebar-border: 220 8% 86%;
+  --sidebar-border: 220 20% 84%;
 
-  --sidebar-primary: 210 85% 32%;
+  --sidebar-primary: 200 90% 45%;
 
-  --sidebar-primary-foreground: 210 85% 98%;
+  --sidebar-primary-foreground: 220 25% 98%;
 
-  --sidebar-accent: 220 12% 88%;
+  --sidebar-accent: 220 20% 88%;
 
-  --sidebar-accent-foreground: 220 8% 12%;
+  --sidebar-accent-foreground: 220 15% 15%;
 
-  --sidebar-ring: 210 85% 32%;
+  --sidebar-ring: 200 90% 45%;
 
-  --popover: 220 10% 92%;
+  --popover: 220 25% 96%;
 
-  --popover-foreground: 220 8% 12%;
+  --popover-foreground: 220 15% 15%;
 
-  --popover-border: 220 12% 84%;
+  --popover-border: 220 20% 85%;
 
-  --primary: 210 85% 32%;
+  --primary: 200 90% 45%;
 
-  --primary-foreground: 210 85% 98%;
+  --primary-foreground: 220 25% 98%;
 
-  --secondary: 220 12% 86%;
+  --secondary: 220 20% 88%;
 
-  --secondary-foreground: 220 8% 12%;
+  --secondary-foreground: 220 15% 15%;
 
-  --muted: 220 12% 90%;
+  --muted: 220 20% 92%;
 
-  --muted-foreground: 220 8% 35%;
+  --muted-foreground: 220 15% 45%;
 
-  --accent: 220 15% 88%;
+  --accent: 150 75% 50%;
 
-  --accent-foreground: 220 8% 12%;
+  --accent-foreground: 220 15% 15%;
 
-  --destructive: 0 75% 35%;
+  --destructive: 0 75% 45%;
 
-  --destructive-foreground: 0 75% 98%;
+  --destructive-foreground: 0 0% 98%;
 
-  --input: 220 15% 72%;
-  --ring: 210 85% 32%;
-  --chart-1: 210 85% 32%;
-  --chart-2: 160 75% 28%;
-  --chart-3: 190 80% 30%;
-  --chart-4: 145 70% 32%;
-  --chart-5: 200 78% 35%;
+  --input: 220 20% 85%;
+  --ring: 200 90% 45%;
+  --chart-1: 200 90% 45%;
+  --chart-2: 150 75% 50%;
+  --chart-3: 180 80% 45%;
+  --chart-4: 170 75% 50%;
+  --chart-5: 190 85% 48%;
 
-  --font-sans: Open Sans, sans-serif;
+  --font-sans: Inter, sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: Menlo, monospace;
+  --font-mono: JetBrains Mono, monospace;
   --radius: .5rem; /* 8px */
   --shadow-2xs: 0px 2px 0px 0px hsl(220 15% 10% / 0.03);
   --shadow-xs: 0px 2px 0px 0px hsl(220 15% 10% / 0.04);
@@ -132,67 +132,67 @@
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
 
-  --background: 220 6% 8%;
+  --background: 220 40% 6%;
 
-  --foreground: 220 6% 92%;
+  --foreground: 220 15% 92%;
 
-  --border: 220 8% 18%;
+  --border: 220 30% 18%;
 
-  --card: 220 6% 10%;
+  --card: 220 35% 10%;
 
-  --card-foreground: 220 6% 92%;
+  --card-foreground: 220 15% 92%;
 
-  --card-border: 220 8% 14%;
+  --card-border: 220 30% 15%;
 
-  --sidebar: 220 6% 12%;
+  --sidebar: 220 35% 8%;
 
-  --sidebar-foreground: 220 6% 92%;
+  --sidebar-foreground: 220 15% 92%;
 
-  --sidebar-border: 220 8% 16%;
+  --sidebar-border: 220 30% 16%;
 
-  --sidebar-primary: 210 85% 32%;
+  --sidebar-primary: 200 90% 50%;
 
-  --sidebar-primary-foreground: 210 85% 98%;
+  --sidebar-primary-foreground: 220 35% 8%;
 
-  --sidebar-accent: 220 12% 16%;
+  --sidebar-accent: 220 30% 18%;
 
-  --sidebar-accent-foreground: 220 6% 92%;
+  --sidebar-accent-foreground: 220 15% 92%;
 
-  --sidebar-ring: 210 85% 32%;
+  --sidebar-ring: 200 90% 50%;
 
-  --popover: 220 8% 14%;
+  --popover: 220 35% 12%;
 
-  --popover-foreground: 220 6% 92%;
+  --popover-foreground: 220 15% 92%;
 
-  --popover-border: 220 10% 18%;
+  --popover-border: 220 30% 20%;
 
-  --primary: 210 85% 32%;
+  --primary: 200 90% 50%;
 
-  --primary-foreground: 210 85% 98%;
+  --primary-foreground: 220 35% 8%;
 
-  --secondary: 220 12% 18%;
+  --secondary: 220 30% 18%;
 
-  --secondary-foreground: 220 6% 92%;
+  --secondary-foreground: 220 15% 92%;
 
-  --muted: 220 12% 16%;
+  --muted: 220 30% 16%;
 
-  --muted-foreground: 220 6% 65%;
+  --muted-foreground: 220 15% 60%;
 
-  --accent: 220 15% 18%;
+  --accent: 150 75% 55%;
 
-  --accent-foreground: 220 6% 92%;
+  --accent-foreground: 220 35% 8%;
 
-  --destructive: 0 75% 35%;
+  --destructive: 0 75% 50%;
 
-  --destructive-foreground: 0 75% 98%;
+  --destructive-foreground: 220 15% 92%;
 
-  --input: 220 15% 32%;
-  --ring: 210 85% 32%;
-  --chart-1: 210 85% 62%;
-  --chart-2: 160 75% 58%;
-  --chart-3: 190 80% 60%;
-  --chart-4: 145 70% 62%;
-  --chart-5: 200 78% 65%;
+  --input: 220 30% 22%;
+  --ring: 200 90% 50%;
+  --chart-1: 200 90% 55%;
+  --chart-2: 150 75% 60%;
+  --chart-3: 180 80% 55%;
+  --chart-4: 170 75% 58%;
+  --chart-5: 190 85% 58%;
 
   --shadow-2xs: 0px 2px 0px 0px hsl(220 15% 0% / 0.10);
   --shadow-xs: 0px 2px 0px 0px hsl(220 15% 0% / 0.12);
@@ -345,5 +345,76 @@
   .border.active-elevate-2:not(.no-active-interaction-elevate)::after,
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 0.6;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+  }
+
+  @keyframes rotate-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-rotate-slow {
+    animation: rotate-slow 60s linear infinite;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s linear infinite;
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.3s ease-out;
+  }
+
+  .animate-fade-scale-in {
+    animation: fade-scale-in 0.3s ease-out;
   }
 }
