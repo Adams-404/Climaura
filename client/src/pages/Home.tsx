@@ -93,13 +93,45 @@ export default function Home() {
 
   const promptMutation = useMutation<AIResponse, Error, string>({
     mutationFn: async (prompt: string) => {
-      const response = await apiRequest("POST", "/api/prompt", { prompt });
-      const result = aiResponseSchema.safeParse(response);
-      if (!result.success) {
-        console.error('Invalid response format:', result.error);
-        throw new Error('Invalid response from server');
+      try {
+        const response = await apiRequest("POST", "/api/prompt", { prompt });
+        const responseData = await response.json();
+        
+        // Check if the response is an error
+        if (responseData && responseData.error) {
+          throw new Error(responseData.message || 'Error processing your request');
+        }
+        
+        // Ensure we have the required fields
+        if (!responseData || typeof responseData.text !== 'string' || !responseData.continent) {
+          console.error('Invalid response structure:', responseData);
+          throw new Error('Invalid response from server');
+        }
+        
+        // Create a properly formatted response object
+        const formattedResponse: AIResponse = {
+          text: responseData.text,
+          continent: responseData.continent,
+          relatedData: responseData.relatedData,
+          quiz: responseData.quiz ? {
+            id: responseData.quiz.id,
+            question: responseData.quiz.question,
+            options: responseData.quiz.options || []
+          } : undefined
+        };
+        
+        // Validate against the schema
+        const result = aiResponseSchema.safeParse(formattedResponse);
+        if (!result.success) {
+          console.error('Schema validation failed:', result.error);
+          throw new Error('Invalid response format from server');
+        }
+        
+        return result.data;
+      } catch (error) {
+        console.error('Error in mutationFn:', error);
+        throw error instanceof Error ? error : new Error('An unknown error occurred');
       }
-      return result.data;
     },
     onSuccess: (data) => {
       setCurrentResponse(data);
