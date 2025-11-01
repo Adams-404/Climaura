@@ -96,7 +96,7 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
             <div className="p-6 space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent" data-testid="text-continent-name">
-                  {response.continent.charAt(0).toUpperCase() + response.continent.slice(1)}
+                  {response.continent ? response.continent.charAt(0).toUpperCase() + response.continent.slice(1) : ''}
                 </h2>
                 <div className="flex items-center gap-2">
                   <Button
