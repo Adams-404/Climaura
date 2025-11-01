@@ -21,7 +21,7 @@ const GlobeComponent = lazy(() =>
 // Add Inter and DM Sans fonts to document head
 const addFonts = () => {
   const link = document.createElement('link');
-  link.href = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap';
+  link.href = 'https://fonts.googleapis.com/css2?family=Indie+Flower&family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap';
   link.rel = 'stylesheet';
   document.head.appendChild(link);
   
@@ -214,15 +214,15 @@ export default function Home() {
                 }}></span>
               </h2>
               <p className="text-lg md:text-xl text-white/90 mt-4" style={{
-                fontFamily: '"Permanent Marker", cursive, sans-serif',
+                fontFamily: '"Indie Flower", cursive, sans-serif',
                 fontWeight: 400,
-                fontSize: '1.6rem',
+                fontSize: '2.1rem',
                 letterSpacing: '0.03em',
                 maxWidth: '32rem',
                 margin: '1rem auto 0',
-                lineHeight: '1.3',
-                color: '#fff',
-                textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+                lineHeight: '1.5',
+                color: 'rgba(255,255,255,0.95)',
+                textShadow: '0 2px 3px rgba(0,0,0,0.3)'
               }} data-testid="text-welcome-subtitle">
                 Explore Earth's story through the lens of climate data and AI
               </p>
