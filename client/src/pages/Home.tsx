@@ -8,6 +8,7 @@ import { LoadingState } from "@/components/LoadingState";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useEffect } from 'react';
 import { aiResponseSchema } from "@shared/schema";
 import type { AIResponse, ContinentKey, InsertPledge } from "@shared/schema";
 
@@ -17,7 +18,20 @@ const GlobeComponent = lazy(() =>
   }))
 );
 
+// Add Inter and DM Sans fonts to document head
+const addFonts = () => {
+  const link = document.createElement('link');
+  link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap';
+  link.rel = 'stylesheet';
+  document.head.appendChild(link);
+  return () => link.remove();
+};
+
 export default function Home() {
+  useEffect(() => {
+    const cleanup = addFonts();
+    return cleanup;
+  }, []);
   const [focusContinent, setFocusContinent] = useState<ContinentKey | null>(null);
   const [currentResponse, setCurrentResponse] = useState<AIResponse | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -115,12 +129,51 @@ export default function Home() {
 
         {showWelcome && (
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none z-10">
-            <h2 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-fade-scale-in" data-testid="text-welcome-title">
-              Prompt the planet
-            </h2>
-            <p className="text-xl md:text-2xl text-muted-foreground animate-fade-scale-in" style={{ animationDelay: '0.2s' }} data-testid="text-welcome-subtitle">
-              to tell you its story
-            </p>
+            <div className="relative inline-block text-center">
+              <h2 
+                className="text-4xl md:text-6xl font-bold mb-4 relative inline-block" 
+                data-testid="text-welcome-title"
+                style={{
+                  fontFamily: '"DM Sans", sans-serif',
+                  color: 'transparent',
+                  background: 'linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.2), rgba(255,255,255,0.1))',
+                  WebkitBackgroundClip: 'text',
+                  backgroundClip: 'text',
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                  letterSpacing: '-0.025em',
+                  lineHeight: '1.1',
+                  padding: '0.5rem 1rem',
+                  position: 'relative',
+                  zIndex: 1
+                }}
+              >
+                Prompt the Planet
+                <span style={{
+                  content: '""',
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: '30%',
+                  background: 'rgba(255,255,255,0.1)',
+                  filter: 'blur(10px)',
+                  zIndex: -1,
+                  transform: 'scale(0.9) translateY(10px)',
+                  opacity: 0.7
+                }}></span>
+              </h2>
+              <p className="text-lg md:text-xl text-white/90 mt-4" style={{
+                fontFamily: '"Inter", sans-serif',
+                fontWeight: 400,
+                letterSpacing: '0.02em',
+                maxWidth: '32rem',
+                margin: '1rem auto 0',
+                lineHeight: '1.6',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)'
+              }} data-testid="text-welcome-subtitle">
+                Explore Earth's story through the lens of climate data and AI
+              </p>
+            </div>
           </div>
         )}
       </div>
