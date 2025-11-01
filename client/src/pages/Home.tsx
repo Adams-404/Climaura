@@ -8,6 +8,7 @@ import { LoadingState } from "@/components/LoadingState";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { aiResponseSchema } from "@shared/schema";
 import type { AIResponse, ContinentKey, InsertPledge } from "@shared/schema";
 
 const GlobeComponent = lazy(() =>
@@ -23,10 +24,15 @@ export default function Home() {
   const [isPledgeModalOpen, setIsPledgeModalOpen] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
 
-  const promptMutation = useMutation({
+  const promptMutation = useMutation<AIResponse, Error, string>({
     mutationFn: async (prompt: string) => {
       const response = await apiRequest("POST", "/api/prompt", { prompt });
-      return response as AIResponse;
+      const result = aiResponseSchema.safeParse(response);
+      if (!result.success) {
+        console.error('Invalid response format:', result.error);
+        throw new Error('Invalid response from server');
+      }
+      return result.data;
     },
     onSuccess: (data) => {
       setCurrentResponse(data);
@@ -78,7 +84,7 @@ export default function Home() {
         onReset={handleReset}
       />
 
-      <div className="absolute inset-0 pt-16">
+      <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-accent/5 pointer-events-none" />
         
         <div className="absolute inset-0 overflow-hidden pointer-events-none">

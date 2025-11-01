@@ -89,30 +89,25 @@ export function PromptInput({ onSubmit, isLoading, disabled }: PromptInputProps)
             />
           </div>
           
-          {/* Enhanced submit button with liquid effect */}
+          {/* Submit button aligned with input */}
           <Button
             type="submit"
             size="icon"
             disabled={!prompt.trim() || isLoading || disabled}
-            className="relative h-16 w-16 rounded-2xl bg-white/6 hover:bg-white/10 border border-white/10 shadow-lg transition-all duration-500 hover:scale-105 mr-1 overflow-hidden group/button"
+            className="relative h-14 w-14 rounded-full transition-all duration-200 group/button"
             data-testid="button-submit-prompt"
             style={{
-              backdropFilter: 'blur(6px)',
-              WebkitBackdropFilter: 'blur(6px)'
+              background: 'rgba(255, 255, 255, 0.03)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)'
             }}
           >
-            {/* Liquid shine effect */}
-            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover/button:translate-x-full transition-transform duration-1000" />
-            
-            {/* Ripple effect container */}
-            <span className="absolute inset-0 rounded-2xl overflow-hidden">
-              <span className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(255,255,255,0.1)_70%,transparent_71%)] opacity-0 group-hover/button:opacity-100 transition-opacity duration-700" />
-            </span>
-            
             {isLoading ? (
-              <Loader2 className="h-6 w-6 animate-spin relative z-10" />
+              <Loader2 className="h-5 w-5 animate-spin" style={{ opacity: 0.8 }} />
             ) : (
-              <Sparkles className="h-6 w-6 relative z-10" />
+              <Sparkles className="h-5 w-5" style={{ opacity: 0.9 }} />
             )}
           </Button>
         </div>
