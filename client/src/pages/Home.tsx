@@ -21,10 +21,63 @@ const GlobeComponent = lazy(() =>
 // Add Inter and DM Sans fonts to document head
 const addFonts = () => {
   const link = document.createElement('link');
-  link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap';
+  link.href = 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap';
   link.rel = 'stylesheet';
   document.head.appendChild(link);
-  return () => link.remove();
+  
+  // Add glitch effect styles
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes glitch {
+      0% { transform: translate(0); text-shadow: 0.05em 0 0 #00fffc, -0.05em -0.025em 0 #fc00ff; }
+      14% { transform: translate(0); text-shadow: 0.05em 0 0 #00fffc, -0.05em -0.025em 0 #fc00ff; }
+      15% { transform: translate(-0.05em, 0.025em); text-shadow: -0.05em -0.025em 0 #00fffc, 0.025em 0.025em 0 #fc00ff; }
+      49% { transform: translate(-0.05em, 0.025em); text-shadow: -0.05em -0.025em 0 #00fffc, 0.025em 0.025em 0 #fc00ff; }
+      50% { transform: translate(0.05em, -0.025em); text-shadow: 0.025em 0.05em 0 #00fffc, 0.05em 0 0 #fc00ff; }
+      99% { transform: translate(0.05em, -0.025em); text-shadow: 0.025em 0.05em 0 #00fffc, 0.05em 0 0 #fc00ff; }
+      100% { transform: translate(0); text-shadow: -0.025em 0 0 #00fffc, -0.025em -0.025em 0 #fc00ff; }
+    }
+    
+    .text-glitch {
+      position: relative;
+      display: inline-block;
+      animation: glitch 2s infinite;
+    }
+    
+    .text-glitch::before,
+    .text-glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: inherit;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      opacity: 0.7;
+    }
+    
+    .text-glitch::before {
+      left: 2px;
+      text-shadow: 2px 0 #ff00c1;
+      clip-path: inset(45% 0 45% 0);
+      animation: glitch 3s infinite linear alternate-reverse;
+    }
+    
+    .text-glitch::after {
+      left: -2px;
+      text-shadow: -2px 0 #00fff9;
+      clip-path: inset(80% 0 10% 0);
+      animation: glitch 2s infinite linear alternate-reverse;
+    }
+  `;
+  document.head.appendChild(style);
+  return () => {
+    link.remove();
+    style.remove();
+  };
 };
 
 export default function Home() {
@@ -136,18 +189,16 @@ export default function Home() {
                 style={{
                   fontFamily: '"DM Sans", sans-serif',
                   color: 'transparent',
-                  background: 'linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.2), rgba(255,255,255,0.1))',
-                  WebkitBackgroundClip: 'text',
-                  backgroundClip: 'text',
-                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                  WebkitTextStroke: '0.8px #60a5fa',
                   letterSpacing: '-0.025em',
                   lineHeight: '1.1',
                   padding: '0.5rem 1rem',
                   position: 'relative',
-                  zIndex: 1
+                  zIndex: 1,
+                  textShadow: '0 0 8px rgba(96, 165, 250, 0.5)'
                 }}
               >
-                Prompt the Planet
+                <span className="text-glitch" data-text="Prompt the Planet">Prompt the Planet</span>
                 <span style={{
                   content: '""',
                   position: 'absolute',
@@ -163,13 +214,15 @@ export default function Home() {
                 }}></span>
               </h2>
               <p className="text-lg md:text-xl text-white/90 mt-4" style={{
-                fontFamily: '"Inter", sans-serif',
+                fontFamily: '"Permanent Marker", cursive, sans-serif',
                 fontWeight: 400,
-                letterSpacing: '0.02em',
+                fontSize: '1.6rem',
+                letterSpacing: '0.03em',
                 maxWidth: '32rem',
                 margin: '1rem auto 0',
-                lineHeight: '1.6',
-                textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)'
+                lineHeight: '1.3',
+                color: '#fff',
+                textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
               }} data-testid="text-welcome-subtitle">
                 Explore Earth's story through the lens of climate data and AI
               </p>
