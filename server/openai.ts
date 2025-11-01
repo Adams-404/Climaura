@@ -1,7 +1,7 @@
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Initialize the Google Gemini client
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
 
 interface ClimatePromptResponse {
   text: string;
@@ -13,6 +13,8 @@ interface ClimatePromptResponse {
 
 export async function processClimatePrompt(prompt: string): Promise<ClimatePromptResponse> {
   try {
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
     const systemPrompt = `You are GaiaPrompt, an AI climate educator helping users understand climate change impacts across different continents. 
 Your role is to:
 1. Identify which continent the user is asking about (Africa, Asia, Europe, North America, South America, Oceania, or Antarctica)
@@ -20,7 +22,7 @@ Your role is to:
 3. Keep responses concise (2-3 paragraphs max)
 4. Sometimes create a quiz question to test understanding
 
-Respond with JSON in this exact format:
+Respond with JSON in this exact format and nothing else:
 {
   "text": "Your educational response here",
   "continent": "continentName (lowercase, no spaces - use northAmerica, southAmerica)",
@@ -31,38 +33,60 @@ Respond with JSON in this exact format:
 
 Make your responses engaging, solution-oriented, and empowering. Focus on specific impacts, real data when possible, and what people can do to help.`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-5",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: prompt },
+    const result = await model.generateContent({
+      contents: [
+        {
+          role: "user",
+          parts: [
+            { text: systemPrompt },
+            { text: `User question: ${prompt}` }
+          ]
+        }
       ],
-      response_format: { type: "json_object" },
-      max_completion_tokens: 1000,
+      generationConfig: {
+        temperature: 0.7,
+        topP: 0.8,
+        topK: 40,
+        maxOutputTokens: 1000,
+      }
     });
 
-    const result = JSON.parse(response.choices[0].message.content || "{}");
+    const response = await result.response;
+    const text = response.text();
+    
+    // Extract JSON from the response
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error("Could not parse AI response");
+    }
+
+    const resultData = JSON.parse(jsonMatch[0]);
     
     return {
-      text: result.text || "I'm here to help you learn about climate change. Please ask me a question!",
-      continent: normalizeContinent(result.continent || "africa"),
-      quizQuestion: result.quizQuestion,
-      quizOptions: result.quizOptions,
-      quizCorrectIndex: result.quizCorrectIndex,
+      text: resultData.text || "I'm here to help you learn about climate change. Please ask me a question!",
+      continent: normalizeContinent(resultData.continent || "africa"),
+      quizQuestion: resultData.quizQuestion,
+      quizOptions: resultData.quizOptions,
+      quizCorrectIndex: resultData.quizCorrectIndex,
     };
   } catch (error) {
-    console.error("OpenAI API error:", error);
-    throw new Error("Failed to process climate prompt");
+    console.error("Error processing prompt with Gemini:", error);
+    return {
+      text: "I'm having trouble connecting to the AI service. Please try again later.",
+      continent: "global"
+    };
   }
 }
 
 function normalizeContinent(continent: string): string {
-  const normalized = continent.toLowerCase().replace(/\s+/g, "");
-  const validContinents = ["africa", "asia", "europe", "northamerica", "southamerica", "oceania", "antarctica"];
-  
-  if (validContinents.includes(normalized)) {
-    return normalized;
-  }
-  
-  return "africa";
+  const lower = continent.toLowerCase().trim();
+  // Handle variations in continent names
+  if (['north america', 'north-america', 'north_america', 'northamerica'].includes(lower)) return 'northAmerica';
+  if (['south america', 'south-america', 'south_america', 'southamerica'].includes(lower)) return 'southAmerica';
+  if (['europe'].includes(lower)) return 'europe';
+  if (['africa'].includes(lower)) return 'africa';
+  if (['asia'].includes(lower)) return 'asia';
+  if (['australia', 'oceania'].includes(lower)) return 'oceania';
+  if (['antarctica'].includes(lower)) return 'antarctica';
+  return 'global'; // default fallback
 }
