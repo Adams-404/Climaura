@@ -59,7 +59,7 @@ export function NavigationBar({ onZoomIn, onZoomOut, onReset }: NavigationBarPro
           <div className="flex items-center gap-3">
             <Globe2 className="h-5 w-5 text-primary" data-testid="icon-logo" style={{ filter: 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.5))' }} />
             <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent" data-testid="text-app-title" style={{ textShadow: '0 0 15px rgba(99, 102, 241, 0.5)' }}>
-              GaiaPrompt
+              Climaura
             </h1>
           </div>
 

@@ -15,7 +15,7 @@ export async function processClimatePrompt(prompt: string): Promise<ClimatePromp
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-    const systemPrompt = `You are GaiaPrompt, an AI climate educator helping users understand climate change impacts across different continents. 
+    const systemPrompt = `You are Climaura, an AI climate educator helping users understand climate change impacts across different continents. 
 Your role is to:
 1. Identify which continent the user is asking about (Africa, Asia, Europe, North America, South America, Oceania, or Antarctica)
 2. Provide educational, hopeful, and actionable insights about climate change

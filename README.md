@@ -1,6 +1,6 @@
-# 🌍 GaiaPrompt
+# 🌍 Climaura
 
-An interactive climate education platform that provides AI-powered insights about climate change impacts across different continents. The application features a 3D globe interface where users can explore climate data and learn about environmental changes.
+Climaura is an advanced climate intelligence platform that delivers AI-powered insights about climate change impacts across the globe. Featuring an interactive 3D interface, Climaura helps users explore, understand, and engage with climate data in an immersive way.
 
 ## ✨ Features
 

@@ -1,4 +1,4 @@
-# GaiaPrompt Design Guidelines (Compacted)
+# Climaura Design Guidelines (Compacted)
 
 ## Core Philosophy
 **Immersive Earth Visualization** inspired by Google Earth and NASA interfaces. Balance futuristic aesthetics with organic elements—cinematic, accessible, and solution-oriented climate storytelling.
@@ -98,7 +98,7 @@
 ### Navigation Bar
 ```javascript
 // Fixed top, h-16, backdrop-blur-xl, bg-black/40
-// Logo: Left, "GaiaPrompt" + Earth icon (24px), font-bold
+// Logo: Left, "Climaura" + Earth icon (24px), font-bold
 // Controls (right): Zoom (±), Reset, Mute, Settings (all 40px circular)
 // Mobile: Hamburger → slide-out drawer
 ```

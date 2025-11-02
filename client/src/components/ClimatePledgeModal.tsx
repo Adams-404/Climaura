@@ -60,7 +60,7 @@ export function ClimatePledgeModal({ isOpen, onClose, onSubmit, continent }: Cli
   };
 
   const handleShare = () => {
-    const text = `I just took a climate pledge: "${pledgeText}" - Join me in making a difference! #GaiaPrompt #ClimateAction`;
+    const text = `I just took a climate pledge: "${pledgeText}" - Join me in making a difference! #Climaura #ClimateAction`;
     
     if (navigator.share) {
       navigator.share({
