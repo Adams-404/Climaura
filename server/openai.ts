@@ -1,7 +1,14 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Initialize the Google Gemini client
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
+console.log('Loading Google AI API key from environment...');
+const apiKey = process.env.GOOGLE_AI_API_KEY;
+console.log(`API Key present: ${!!apiKey}`);
+if (apiKey) {
+  console.log(`API Key length: ${apiKey.length}`);
+}
+
+const genAI = new GoogleGenerativeAI(apiKey || '');
 
 interface ClimatePromptResponse {
   text: string;
@@ -13,7 +20,7 @@ interface ClimatePromptResponse {
 
 export async function processClimatePrompt(prompt: string): Promise<ClimatePromptResponse> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const systemPrompt = `You are Climaura, an AI climate educator helping users understand climate change impacts across different continents. 
 Your role is to:
