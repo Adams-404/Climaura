@@ -12,7 +12,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const aiResponse = await processClimatePrompt(validatedData.prompt);
       
-      const climateData = getClimateData(aiResponse.continent);
+      // Make sure to await the async call to getClimateData
+      const climateData = await getClimateData(aiResponse.continent);
       
       let quizId: string | undefined;
       if (aiResponse.quizQuestion) {

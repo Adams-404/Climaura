@@ -1,6 +1,8 @@
 import type { ClimateData } from "@shared/schema";
+import { getRealTimeClimateData } from "./services/climate-data-service";
 
-const climateDatabase: Record<string, ClimateData> = {
+// Fallback data in case the API is not available
+const FALLBACK_DATA: Record<string, ClimateData> = {
   africa: {
     continent: "Africa",
     co2Emissions: 1.3,
@@ -129,10 +131,41 @@ const climateDatabase: Record<string, ClimateData> = {
   },
 };
 
-export function getClimateData(continent: string): ClimateData | undefined {
-  return climateDatabase[continent.toLowerCase()];
+export async function getClimateData(continent: string): Promise<ClimateData> {
+  const normalizedContinent = continent.toLowerCase();
+  
+  try {
+    // Try to get real-time data first
+    const realTimeData = await getRealTimeClimateData(normalizedContinent);
+    
+    // If we have yearly data in our fallback, use it (since the API doesn't provide historical data)
+    if (FALLBACK_DATA[normalizedContinent]?.yearlyData) {
+      realTimeData.yearlyData = FALLBACK_DATA[normalizedContinent].yearlyData || [];
+    }
+    
+    return realTimeData;
+  } catch (error) {
+    console.error('Error getting climate data, falling back to static data:', error);
+    // Fall back to static data if the API call fails
+    return FALLBACK_DATA[normalizedContinent] || {
+      continent: continent.charAt(0).toUpperCase() + continent.slice(1),
+      co2Emissions: 0,
+      temperature: 0,
+      renewableEnergy: 0,
+      population: 0,
+      yearlyData: [],
+    };
+  }
 }
 
-export function getAllClimateData(): Record<string, ClimateData> {
-  return climateDatabase;
+export async function getAllClimateData(): Promise<Record<string, ClimateData>> {
+  const continents = Object.keys(FALLBACK_DATA);
+  const climateData: Record<string, ClimateData> = {};
+  
+  // Fetch data for all continents in parallel
+  await Promise.all(continents.map(async (continent) => {
+    climateData[continent] = await getClimateData(continent);
+  }));
+  
+  return climateData;
 }
