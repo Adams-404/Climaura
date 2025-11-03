@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useEffect, useState } from 'react';
-import { Globe2, ZoomIn, ZoomOut, RotateCcw, Settings, Moon, Sun } from "lucide-react";
+import { Globe2, ZoomIn, ZoomOut, RotateCcw, Settings, User } from "lucide-react";
 
 interface NavigationBarProps {
   onZoomIn?: () => void;
@@ -10,14 +10,17 @@ interface NavigationBarProps {
 }
 
 export function NavigationBar({ onZoomIn, onZoomOut, onReset }: NavigationBarProps) {
+  // Theme functionality - to be implemented later
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
+  // Keep theme initialization for future use
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' || 'dark';
     setTheme(savedTheme);
     document.documentElement.classList.toggle('dark', savedTheme === 'dark');
   }, []);
 
+  // Keep theme toggle function for future use
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
@@ -134,24 +137,19 @@ export function NavigationBar({ onZoomIn, onZoomOut, onReset }: NavigationBarPro
                 <Button
                   size="icon"
                   variant="ghost"
-                  onClick={toggleTheme}
                   className="h-9 w-9 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
-                  data-testid="button-theme-toggle"
+                  data-testid="profile-button"
                   style={{
                     backdropFilter: 'blur(8px)',
                     WebkitBackdropFilter: 'blur(8px)',
                     border: '1px solid rgba(255, 255, 255, 0.05)'
                   }}
                 >
-                  {theme === 'dark' ? (
-                    <Sun className="h-4 w-4" />
-                  ) : (
-                    <Moon className="h-4 w-4" />
-                  )}
+                  <User className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="bottom">
-                <p>{theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}</p>
+                <p>Profile</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
