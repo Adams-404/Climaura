@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import Globe from "react-globe.gl";
 import { type ContinentKey } from "@shared/schema";
+import { Eye, EyeOff } from "lucide-react";
+import { Button } from "./ui/button";
 
 // Continent colors for consistent theming
 const CONTINENT_COLORS: Record<string, string> = {
@@ -227,6 +229,7 @@ export function GlobeComponent({ onCountryClick, className }: GlobeComponentProp
   const globeEl = useRef<any>();
   const [isAutoRotating, setIsAutoRotating] = useState(true);
   const [hoveredCountry, setHoveredCountry] = useState<CountryMarker | null>(null);
+  const [showMarkers, setShowMarkers] = useState(false);
 
   // Helper function to get color for a continent
   const getContinentColor = (continent: string): string => {
@@ -270,12 +273,32 @@ export function GlobeComponent({ onCountryClick, className }: GlobeComponentProp
         height: '100%',
       }}
     >
+      <div className="absolute top-4 right-4 z-10 flex gap-2">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => setShowMarkers(!showMarkers)}
+          className="bg-background/80 backdrop-blur-sm hover:bg-background/90"
+        >
+          {showMarkers ? (
+            <>
+              <EyeOff className="mr-2 h-4 w-4" />
+              Hide Markers
+            </>
+          ) : (
+            <>
+              <Eye className="mr-2 h-4 w-4" />
+              Show Markers
+            </>
+          )}
+        </Button>
+      </div>
       <Globe
         ref={globeEl}
         globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
         bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
         backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
-        htmlElementsData={countryData}
+        htmlElementsData={showMarkers ? countryData : []}
         htmlElement={(d: unknown) => {
           const country = d as CountryMarker;
           const isHovered = hoveredCountry?.name === country.name;
