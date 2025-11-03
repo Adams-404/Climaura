@@ -10,48 +10,48 @@ export function ClimateDataChart({ data }: ClimateDataChartProps) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+        <Card className="bg-transparent border border-white/10">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-white/70">
               CO₂ Emissions
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-mono" data-testid="text-co2-emissions">
+            <div className="text-2xl font-bold font-mono text-white/90" data-testid="text-co2-emissions">
               {data.co2Emissions.toFixed(1)} MT
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-transparent border border-white/10">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-white/70">
               Temperature
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-mono" data-testid="text-temperature">
+            <div className="text-2xl font-bold font-mono text-white/90" data-testid="text-temperature">
               +{data.temperature.toFixed(1)}°C
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-transparent border border-white/10">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-white/70">
               Renewable Energy
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold font-mono" data-testid="text-renewable-energy">
+            <div className="text-2xl font-bold font-mono text-white/90" data-testid="text-renewable-energy">
               {data.renewableEnergy.toFixed(1)}%
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
+      <Card className="bg-transparent border border-white/10">
+        <CardHeader className="text-white/90">
           <CardTitle>Climate Trends Over Time</CardTitle>
         </CardHeader>
         <CardContent>

@@ -90,12 +90,19 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed right-0 top-0 bottom-0 w-full md:w-[480px] bg-card/95 backdrop-blur-xl border-l border-border shadow-2xl z-40 overflow-y-auto"
+            className="fixed right-0 top-0 bottom-0 w-full md:w-[480px] border-l border-border shadow-2xl z-40 overflow-y-auto"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
+              backdropFilter: 'blur(16px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.1)'
+            }}
             data-testid="drawer-content"
           >
             <div className="p-6 space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent" data-testid="text-continent-name">
+                <h2 className="text-2xl font-bold text-white" data-testid="text-continent-name">
                   {response.continent ? response.continent.charAt(0).toUpperCase() + response.continent.slice(1) : ''}
                 </h2>
                 <div className="flex items-center gap-2">
@@ -119,15 +126,33 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
               </div>
 
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
-                  <TabsTrigger value="data" data-testid="tab-data">Data</TabsTrigger>
-                  <TabsTrigger value="quiz" data-testid="tab-quiz">Quiz</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-3 bg-transparent border border-white/10 p-1 rounded-lg">
+                  <TabsTrigger 
+                    value="overview" 
+                    className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/70"
+                    data-testid="tab-overview"
+                  >
+                    Overview
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="data" 
+                    className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/70"
+                    data-testid="tab-data"
+                  >
+                    Data
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="quiz" 
+                    className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/70"
+                    data-testid="tab-quiz"
+                  >
+                    Quiz
+                  </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-4 mt-6">
-                  <Card>
-                    <CardContent className="p-6">
+                  <Card className="bg-transparent border border-white/10">
+                    <CardContent className="p-6 text-white/90">
                       <p className="text-lg leading-relaxed" data-testid="text-response">
                         {response.text}
                       </p>
@@ -139,8 +164,8 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
                   {response.relatedData ? (
                     <ClimateDataChart data={response.relatedData} />
                   ) : (
-                    <Card>
-                      <CardContent className="p-6 text-center text-muted-foreground">
+                    <Card className="bg-transparent border border-white/10">
+                      <CardContent className="p-6 text-center text-white/70">
                         No data available for this region
                       </CardContent>
                     </Card>
@@ -155,8 +180,8 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
                       onAnswer={onQuizAnswer} 
                     />
                   ) : (
-                    <Card>
-                      <CardContent className="p-6 text-center text-muted-foreground">
+                    <Card className="bg-transparent border border-white/10">
+                      <CardContent className="p-6 text-center text-white/70">
                         No quiz available
                       </CardContent>
                     </Card>
@@ -164,7 +189,14 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
                 </TabsContent>
               </Tabs>
 
-              <div className="fixed bottom-0 left-0 right-0 p-4 bg-card/95 backdrop-blur-xl border-t border-border">
+              <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-border"
+              style={{
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
+                backdropFilter: 'blur(16px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+                borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                boxShadow: '0 -4px 16px 0 rgba(31, 38, 135, 0.1)'
+              }}>
                 <div className="flex items-center justify-between max-w-md mx-auto">
                   <Button
                     size="sm"
