@@ -260,7 +260,16 @@ export function GlobeComponent({ onCountryClick, className }: GlobeComponentProp
   };
 
   return (
-    <div className={`relative ${className}`} data-testid="globe-container">
+    <div 
+      className={`relative ${className}`} 
+      data-testid="globe-container"
+      style={{
+        position: 'relative',
+        zIndex: 1,
+        width: '100%',
+        height: '100%',
+      }}
+    >
       <Globe
         ref={globeEl}
         globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
@@ -285,7 +294,7 @@ export function GlobeComponent({ onCountryClick, className }: GlobeComponentProp
                 box-shadow: 0 0 8px ${country.color};
                 cursor: pointer;
                 transition: all 0.2s ease;
-                z-index: ${isHovered ? '100' : '1'};
+                z-index: 15;
                 transform: ${isHovered ? 'scale(1.5)' : 'scale(1)'};
               "
               data-testid="marker-${country.name.toLowerCase().replace(/\s+/g, '-')}"
@@ -314,6 +323,9 @@ export function GlobeComponent({ onCountryClick, className }: GlobeComponentProp
           
           el.style.pointerEvents = "auto";
           el.style.cursor = "pointer";
+          el.style.position = "absolute";
+          el.style.transform = "translate(-50%, -50%)";
+          el.style.zIndex = "10"; // Keep this lower than your navbar/UI elements
           
           // Set up event handlers
           el.onmouseenter = () => setHoveredCountry(country);
