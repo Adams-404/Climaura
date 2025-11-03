@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Globe from "react-globe.gl";
-import { type ContinentKey } from "@shared/schema";
+import type { ContinentKey } from "@shared/schema";
 import { Eye, EyeOff } from "lucide-react";
 
 // Add global styles for the shimmer effect
@@ -235,21 +235,48 @@ interface CountryMarker {
   lng: number;
   capital: string;
   color: string;
-  continent: string;
+  continent: ContinentKey;
 }
 
 interface GlobeComponentProps {
   onCountryClick?: (country: string) => void;
+  onContinentClick?: (continent: ContinentKey) => void;
+  focusContinent?: ContinentKey | null;
   className?: string;
+  onGlobeReady?: (globe: any) => void;
 }
 
-export function GlobeComponent({ onCountryClick, className }: GlobeComponentProps) {
+export function GlobeComponent({ 
+  onCountryClick, 
+  onContinentClick, 
+  focusContinent,
+  className, 
+  onGlobeReady 
+}: GlobeComponentProps) {
   useEffect(() => {
     const cleanup = addGlobalStyles();
     return () => cleanup();
   }, []);
   
   const globeEl = useRef<any>();
+
+  // Notify parent when the globe is ready
+  useEffect(() => {
+    if (globeEl.current && onGlobeReady) {
+      onGlobeReady(globeEl);
+    }
+  }, [onGlobeReady]);
+
+  // Handle focus continent change
+  useEffect(() => {
+    if (globeEl.current && focusContinent) {
+      const country = COUNTRIES.find(c => c.continent === focusContinent);
+      if (country) {
+        const { lat, lng } = country;
+        globeEl.current.pointOfView({ lat, lng, altitude: 2 }, 1000);
+      }
+    }
+  }, [focusContinent]);
   const [isAutoRotating, setIsAutoRotating] = useState(true);
   const [hoveredCountry, setHoveredCountry] = useState<CountryMarker | null>(null);
   const [showMarkers, setShowMarkers] = useState(false);
@@ -259,9 +286,10 @@ export function GlobeComponent({ onCountryClick, className }: GlobeComponentProp
     return CONTINENT_COLORS[continent as keyof typeof CONTINENT_COLORS] || '#cccccc';
   };
   const [countryData] = useState<CountryMarker[]>(() => {
-    return COUNTRIES.map(country => ({
+    return COUNTRIES.map((country) => ({
       ...country,
-      color: CONTINENT_COLORS[country.continent] || '#999999'
+      continent: country.continent as ContinentKey,
+      color: CONTINENT_COLORS[country.continent as keyof typeof CONTINENT_COLORS] || '#999999'
     }));
   });
 
@@ -276,14 +304,61 @@ export function GlobeComponent({ onCountryClick, className }: GlobeComponentProp
   }, [isAutoRotating]);
 
   const handleCountryClick = (country: CountryMarker) => {
-    if (onCountryClick) {
+    if (onContinentClick) {
+      onContinentClick(country.continent as ContinentKey);
+    } else if (onCountryClick) {
       onCountryClick(country.name);
     }
   };
 
   const handleGlobeClick = () => {
-    setIsAutoRotating(prev => !prev);
+    const newState = !isAutoRotating;
+    setIsAutoRotating(newState);
+    if (globeEl.current) {
+      const controls = globeEl.current.controls();
+      controls.autoRotate = newState;
+      controls.autoRotateSpeed = 0.5;
+      controls.update();
+    }
   };
+
+  const handleZoomIn = () => {
+    if (globeEl.current) {
+      const controls = globeEl.current.controls();
+      const distance = controls.getDistance();
+      controls.dollyIn(0.5);
+      controls.update();
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (globeEl.current) {
+      const controls = globeEl.current.controls();
+      const distance = controls.getDistance();
+      controls.dollyOut(0.5);
+      controls.update();
+    }
+  };
+
+  const handleReset = () => {
+    if (globeEl.current) {
+      const controls = globeEl.current.controls();
+      controls.reset();
+      controls.autoRotate = isAutoRotating;
+      controls.autoRotateSpeed = 0.5;
+      controls.update();
+    }
+  };
+
+  // Pass the handlers to NavigationBar if it's a parent component
+  useEffect(() => {
+    const navBar = document.getElementById('navigation-bar');
+    if (navBar) {
+      navBar.dispatchEvent(new CustomEvent('setGlobeHandlers', {
+        detail: { handleZoomIn, handleZoomOut, handleReset }
+      }));
+    }
+  }, []);
 
   return (
     <div 

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Globe2, ZoomIn, ZoomOut, RotateCcw, Settings, User } from "lucide-react";
 
 interface NavigationBarProps {
@@ -9,9 +9,44 @@ interface NavigationBarProps {
   onReset?: () => void;
 }
 
-export function NavigationBar({ onZoomIn, onZoomOut, onReset }: NavigationBarProps) {
+export function NavigationBar({ onZoomIn: propOnZoomIn, onZoomOut: propOnZoomOut, onReset: propOnReset }: NavigationBarProps) {
   // Theme functionality - to be implemented later
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  
+  // Default handlers that do nothing if not overridden
+  const [handlers, setHandlers] = useState({
+    onZoomIn: propOnZoomIn || (() => {}),
+    onZoomOut: propOnZoomOut || (() => {}),
+    onReset: propOnReset || (() => {})
+  });
+  
+  // If props change, update the handlers
+  useEffect(() => {
+    setHandlers({
+      onZoomIn: propOnZoomIn || (() => {}),
+      onZoomOut: propOnZoomOut || (() => {}),
+      onReset: propOnReset || (() => {})
+    });
+  }, [propOnZoomIn, propOnZoomOut, propOnReset]);
+  
+  // Listen for globe handlers from the Globe component
+  useEffect(() => {
+    const handleSetGlobeHandlers = (event: CustomEvent) => {
+      const { handleZoomIn, handleZoomOut, handleReset } = event.detail;
+      setHandlers({
+        onZoomIn: handleZoomIn,
+        onZoomOut: handleZoomOut,
+        onReset: handleReset
+      });
+    };
+    
+    // Add event listener
+    window.addEventListener('setGlobeHandlers', handleSetGlobeHandlers as EventListener);
+    
+    return () => {
+      window.removeEventListener('setGlobeHandlers', handleSetGlobeHandlers as EventListener);
+    };
+  }, []);
 
   // Keep theme initialization for future use
   useEffect(() => {
@@ -29,7 +64,7 @@ export function NavigationBar({ onZoomIn, onZoomOut, onReset }: NavigationBarPro
   };
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-30 w-full max-w-3xl px-4">
+    <div id="navigation-bar" className="fixed top-4 left-1/2 -translate-x-1/2 z-30 w-full max-w-3xl px-4">
       <nav className="relative group" style={{
         background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
         backdropFilter: 'blur(16px) saturate(180%)',
@@ -77,7 +112,7 @@ export function NavigationBar({ onZoomIn, onZoomOut, onReset }: NavigationBarPro
                 <Button
                   size="icon"
                   variant="ghost"
-                  onClick={onZoomIn}
+                  onClick={handlers.onZoomIn}
                   className="h-9 w-9 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
                   data-testid="button-zoom-in"
                   style={{
@@ -98,7 +133,7 @@ export function NavigationBar({ onZoomIn, onZoomOut, onReset }: NavigationBarPro
                 <Button
                   size="icon"
                   variant="ghost"
-                  onClick={onZoomOut}
+                  onClick={handlers.onZoomOut}
                   className="h-9 w-9 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
                   data-testid="button-zoom-out"
                   style={{
@@ -119,7 +154,7 @@ export function NavigationBar({ onZoomIn, onZoomOut, onReset }: NavigationBarPro
                 <Button
                   size="icon"
                   variant="ghost"
-                  onClick={onReset}
+                  onClick={handlers.onReset}
                   className="h-9 w-9 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
                   data-testid="button-reset"
                   style={{

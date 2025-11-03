@@ -90,6 +90,7 @@ export default function Home() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isPledgeModalOpen, setIsPledgeModalOpen] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [globeRef, setGlobeRef] = useState<any>(null);
 
   const promptMutation = useMutation<AIResponse, Error, string>({
     mutationFn: async (prompt: string) => {
@@ -180,7 +181,39 @@ export default function Home() {
   return (
     <div className="relative h-screen w-full overflow-hidden bg-background">
       <NavigationBar
-        onReset={handleReset}
+        onReset={() => {
+          handleReset();
+          if (globeRef?.current) {
+            // Reset to default view
+            globeRef.current.pointOfView(
+              { lat: 0, lng: 0, altitude: 1.5 },
+              1000
+            );
+            // Re-enable auto-rotation
+            globeRef.current.controls().autoRotate = true;
+            globeRef.current.controls().autoRotateSpeed = 0.5;
+          }
+        }}
+        onZoomIn={() => {
+          if (globeRef?.current) {
+            const currentPOV = globeRef.current.pointOfView();
+            const newAltitude = Math.max(0.5, currentPOV.altitude * 0.8);
+            globeRef.current.pointOfView(
+              { ...currentPOV, altitude: newAltitude },
+              300
+            );
+          }
+        }}
+        onZoomOut={() => {
+          if (globeRef?.current) {
+            const currentPOV = globeRef.current.pointOfView();
+            const newAltitude = Math.min(3, currentPOV.altitude * 1.2);
+            globeRef.current.pointOfView(
+              { ...currentPOV, altitude: newAltitude },
+              300
+            );
+          }
+        }}
       />
 
       <div className="absolute inset-0">
@@ -209,6 +242,18 @@ export default function Home() {
             onContinentClick={handleContinentClick}
             focusContinent={focusContinent}
             className="w-full h-full"
+            onGlobeReady={(globe) => {
+              setGlobeRef(globe);
+              if (globe) {
+                // Set initial auto-rotation
+                setTimeout(() => {
+                  if (globe.controls) {
+                    globe.controls().autoRotate = true;
+                    globe.controls().autoRotateSpeed = 0.5;
+                  }
+                }, 100);
+              }
+            }}
           />
         </Suspense>
 
