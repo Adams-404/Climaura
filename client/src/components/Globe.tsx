@@ -227,6 +227,11 @@ export function GlobeComponent({ onCountryClick, className }: GlobeComponentProp
   const globeEl = useRef<any>();
   const [isAutoRotating, setIsAutoRotating] = useState(true);
   const [hoveredCountry, setHoveredCountry] = useState<CountryMarker | null>(null);
+
+  // Helper function to get color for a continent
+  const getContinentColor = (continent: string): string => {
+    return CONTINENT_COLORS[continent as keyof typeof CONTINENT_COLORS] || '#cccccc';
+  };
   const [countryData] = useState<CountryMarker[]>(() => {
     return COUNTRIES.map(country => ({
       ...country,
@@ -262,8 +267,9 @@ export function GlobeComponent({ onCountryClick, className }: GlobeComponentProp
         bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
         backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
         htmlElementsData={countryData}
-        htmlElement={(d: CountryMarker) => {
-          const isHovered = hoveredCountry?.name === d.name;
+        htmlElement={(d: unknown) => {
+          const country = d as CountryMarker;
+          const isHovered = hoveredCountry?.name === country.name;
           const el = document.createElement("div");
           
           el.innerHTML = `
@@ -274,21 +280,21 @@ export function GlobeComponent({ onCountryClick, className }: GlobeComponentProp
                 width: ${isHovered ? '14px' : '8px'};
                 height: ${isHovered ? '14px' : '8px'};
                 border-radius: 50%;
-                background: ${d.color};
+                background: ${getContinentColor(country.continent)};
                 border: 2px solid white;
-                box-shadow: 0 0 8px ${d.color};
+                box-shadow: 0 0 8px ${country.color};
                 cursor: pointer;
                 transition: all 0.2s ease;
                 z-index: ${isHovered ? '100' : '1'};
                 transform: ${isHovered ? 'scale(1.5)' : 'scale(1)'};
               "
-              data-testid="marker-${d.name.toLowerCase().replace(/\s+/g, '-')}"
+              data-testid="marker-${country.name.toLowerCase().replace(/\s+/g, '-')}"
             >
               ${isHovered ? `
                 <div 
                   style="
                     position: absolute;
-                    top: -30px;
+                    bottom: 100%;
                     left: 50%;
                     transform: translateX(-50%);
                     background: rgba(0, 0, 0, 0.8);
@@ -297,10 +303,10 @@ export function GlobeComponent({ onCountryClick, className }: GlobeComponentProp
                     border-radius: 4px;
                     font-size: 12px;
                     white-space: nowrap;
-                    pointer-events: none;
+                    margin-bottom: 8px;
                   "
                 >
-                  ${d.name}${d.capital ? `, ${d.capital}` : ''}
+                  ${country.capital}, ${country.name}
                 </div>
               ` : ''}
             </div>
@@ -309,18 +315,10 @@ export function GlobeComponent({ onCountryClick, className }: GlobeComponentProp
           el.style.pointerEvents = "auto";
           el.style.cursor = "pointer";
           
-          el.addEventListener("click", (e) => {
-            e.stopPropagation();
-            handleCountryClick(d);
-          });
-          
-          el.addEventListener("mouseenter", () => {
-            setHoveredCountry(d);
-          });
-          
-          el.addEventListener("mouseleave", () => {
-            setHoveredCountry(null);
-          });
+          // Set up event handlers
+          el.onmouseenter = () => setHoveredCountry(country);
+          el.onmouseleave = () => setHoveredCountry(null);
+          el.onclick = () => onCountryClick?.(country.name);
           
           return el;
         }}
