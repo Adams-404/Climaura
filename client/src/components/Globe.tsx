@@ -2,6 +2,24 @@ import { useEffect, useRef, useState } from "react";
 import Globe from "react-globe.gl";
 import { type ContinentKey } from "@shared/schema";
 import { Eye, EyeOff } from "lucide-react";
+
+// Add global styles for the shimmer effect
+const addGlobalStyles = () => {
+  if (typeof document === 'undefined') return () => {};
+  
+  if (document.getElementById('shimmer-styles')) return () => {};
+  
+  const style = document.createElement('style');
+  style.id = 'shimmer-styles';
+  style.textContent = `
+    @keyframes shimmer {
+      0% { background-position: -100% 0; }
+      100% { background-position: 200% 0; }
+    }
+  `;
+  document.head.appendChild(style);
+  return () => style.remove();
+};
 import { Button } from "./ui/button";
 
 // Continent colors for consistent theming
@@ -226,6 +244,11 @@ interface GlobeComponentProps {
 }
 
 export function GlobeComponent({ onCountryClick, className }: GlobeComponentProps) {
+  useEffect(() => {
+    const cleanup = addGlobalStyles();
+    return () => cleanup();
+  }, []);
+  
   const globeEl = useRef<any>();
   const [isAutoRotating, setIsAutoRotating] = useState(true);
   const [hoveredCountry, setHoveredCountry] = useState<CountryMarker | null>(null);
@@ -274,24 +297,51 @@ export function GlobeComponent({ onCountryClick, className }: GlobeComponentProp
       }}
     >
       <div className="absolute top-4 right-4 z-10 flex gap-2">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => setShowMarkers(!showMarkers)}
-          className="bg-background/80 backdrop-blur-sm hover:bg-background/90"
+        <div className="relative group">
+          {/* Subtle moving highlight */}
+          <div 
+            className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-300 pointer-events-none rounded-full"
+            style={{
+              background: `linear-gradient(
+                45deg,
+                transparent 40%,
+                rgba(255, 255, 255, 0.4) 48%,
+                rgba(255, 255, 255, 0.7) 50%,
+                rgba(255, 255, 255, 0.4) 52%,
+                transparent 60%
+              )`,
+              backgroundSize: '200% 100%',
+              animation: 'shimmer 3s infinite',
+              borderRadius: '9999px',
+            }}
+          />
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setShowMarkers(!showMarkers)}
+            className="relative overflow-hidden group-hover:bg-white/10 transition-all duration-200"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
+              backdropFilter: 'blur(16px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              borderRadius: '9999px',
+              boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.1)'
+            }}
         >
-          {showMarkers ? (
-            <>
-              <EyeOff className="mr-2 h-4 w-4" />
-              Hide Markers
-            </>
-          ) : (
-            <>
-              <Eye className="mr-2 h-4 w-4" />
-              Show Markers
-            </>
-          )}
-        </Button>
+            {showMarkers ? (
+              <>
+                <EyeOff className="mr-2 h-4 w-4" />
+                Hide Markers
+              </>
+            ) : (
+              <>
+                <Eye className="mr-2 h-4 w-4" />
+                Show Markers
+              </>
+            )}
+          </Button>
+        </div>
       </div>
       <Globe
         ref={globeEl}

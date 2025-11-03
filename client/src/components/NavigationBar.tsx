@@ -61,8 +61,11 @@ export function NavigationBar({ onZoomIn, onZoomOut, onReset }: NavigationBarPro
         
         <div className="h-14 px-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Globe2 className="h-5 w-5 text-primary" data-testid="icon-logo" style={{ filter: 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.5))' }} />
-            <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent" data-testid="text-app-title" style={{ textShadow: '0 0 15px rgba(99, 102, 241, 0.5)' }}>
+            <Globe2 className="h-5 w-5 text-white/90" data-testid="icon-logo" style={{ filter: 'drop-shadow(0 0 5px rgba(255, 255, 255, 0.5))' }} />
+            <h1 className="text-lg font-semibold text-white/90" data-testid="text-app-title" style={{
+              textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+              letterSpacing: '0.03em'
+            }}>
               Climaura
             </h1>
           </div>
