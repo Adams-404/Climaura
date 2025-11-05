@@ -30,12 +30,14 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentResponse, setCurrentResponse] = useState<AIResponse | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize with the initial AI response
   useEffect(() => {
     if (response && messages.length === 0) {
+      setCurrentResponse(response);
       setMessages([{
         id: 'initial',
         content: response.text,
@@ -138,12 +140,14 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
       setMessages(prev => [...prev, aiMessage]);
       
       // Update the response for the tabs
-      if (response) {
-        response.text = data.text;
-        if (data.quiz) {
-          response.quiz = data.quiz;
-        }
-      }
+      setCurrentResponse(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          text: data.text,
+          ...(data.quiz && { quiz: data.quiz })
+        };
+      });
       
       // Auto-speak the response if not muted
       if (!isMuted) {
@@ -204,7 +208,8 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
     setIsMuted(!isMuted);
   };
 
-  if (!response) return null;
+  const displayResponse = currentResponse || response;
+  if (!displayResponse) return null;
 
   return (
     <AnimatePresence>
@@ -236,7 +241,7 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
             <div className="p-6 space-y-6 overflow-y-auto flex-1">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-white" data-testid="text-continent-name">
-                  {response.continent ? response.continent.charAt(0).toUpperCase() + response.continent.slice(1) : ''}
+                  {displayResponse.continent ? displayResponse.continent.charAt(0).toUpperCase() + displayResponse.continent.slice(1) : ''}
                 </h2>
                 <div className="flex items-center gap-2">
                   <Button
@@ -341,8 +346,8 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
                 </TabsContent>
 
                 <TabsContent value="data" className="space-y-4 mt-6">
-                  {response.relatedData ? (
-                    <ClimateDataChart data={response.relatedData} />
+                  {displayResponse.relatedData ? (
+                    <ClimateDataChart data={displayResponse.relatedData} />
                   ) : (
                     <Card className="bg-transparent border border-white/10">
                       <CardContent className="p-6 text-center text-white/70">
@@ -353,10 +358,10 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
                 </TabsContent>
 
                 <TabsContent value="quiz" className="space-y-4 mt-6">
-                  {response.quiz ? (
+                  {displayResponse.quiz ? (
                     <QuizCard 
-                      quiz={response.quiz} 
-                      continent={response.continent}
+                      quiz={displayResponse.quiz} 
+                      continent={displayResponse.continent}
                       onAnswer={onQuizAnswer} 
                     />
                   ) : (
