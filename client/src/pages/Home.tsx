@@ -321,33 +321,10 @@ export default function Home() {
 
       <PromptInput
         onSubmit={handlePromptSubmit}
+        onChatClick={handleOpenAIChat}
         isLoading={promptMutation.isPending}
+        showChatButton={!isDrawerOpen}
       />
-
-      {/* AI Chat Floating Action Button - Only show when drawer is closed */}
-      {!isDrawerOpen && (
-        <button
-          onClick={handleOpenAIChat}
-          className="fixed bottom-8 right-8 z-50 w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-white flex items-center justify-center shadow-lg transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
-          aria-label="Chat with AI"
-          data-testid="button-ai-chat"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="w-6 h-6"
-          >
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-        </button>
-      )}
 
       <AIResponseDrawer
         response={currentResponse}
