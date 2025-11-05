@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { X, Volume2, VolumeX, Play, Pause } from "lucide-react";
+import { X, Volume2, VolumeX, Play, Pause, Send } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import type { AIResponse } from "@shared/schema";
 import { ClimateDataChart } from "./ClimateDataChart";
@@ -16,19 +17,18 @@ interface AIResponseDrawerProps {
 
 export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AIResponseDrawerProps) {
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true); // Default to muted to prevent auto-play
   const [activeTab, setActiveTab] = useState("overview");
+  const [message, setMessage] = useState("");
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Remove auto-play effect
   useEffect(() => {
-    if (isOpen && response && !isMuted) {
-      speakText(response.text);
-    }
-    
     return () => {
       stopSpeaking();
     };
-  }, [isOpen, response, isMuted]);
+  }, []);
 
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
@@ -110,15 +110,22 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
                     size="icon"
                     variant="ghost"
                     onClick={toggleMute}
+                    className="text-white/70 hover:text-white"
+                    title={isMuted ? "Unmute" : "Mute"}
                     data-testid="button-toggle-mute"
                   >
-                    {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+                    {isMuted ? (
+                      <VolumeX className="h-5 w-5" />
+                    ) : (
+                      <Volume2 className="h-5 w-5" />
+                    )}
                   </Button>
                   <Button
                     size="icon"
                     variant="ghost"
                     onClick={onClose}
                     data-testid="button-close-drawer"
+                    className="text-white/70 hover:text-white"
                   >
                     <X className="h-5 w-5" />
                   </Button>
@@ -153,9 +160,74 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
                 <TabsContent value="overview" className="space-y-4 mt-6">
                   <Card className="bg-transparent border border-white/10">
                     <CardContent className="p-6 text-white/90">
-                      <p className="text-lg leading-relaxed" data-testid="text-response">
-                        {response.text}
-                      </p>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-medium">AI Response</h3>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={toggleSpeaking}
+                          disabled={isMuted}
+                          className="text-white/70 hover:text-white"
+                        >
+                          {isSpeaking ? (
+                            <Pause className="h-4 w-4" />
+                          ) : (
+                            <Play className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+                      <div className="space-y-4">
+                        <p className="text-lg leading-relaxed" data-testid="text-response">
+                          {response.text}
+                        </p>
+                        {isSpeaking && (
+                          <div className="flex items-center gap-1 mt-2" data-testid="audio-waveform">
+                            {[...Array(5)].map((_, i) => (
+                              <div
+                                key={i}
+                                className="w-1 h-2 bg-primary rounded-full animate-pulse-glow"
+                                style={{
+                                  height: `${Math.random() * 20 + 10}px`,
+                                  animationDelay: `${i * 0.1}s`,
+                                }}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="mt-6 pt-4 border-t border-white/10">
+                        <form 
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            if (message.trim()) {
+                              // Handle message submission here
+                              console.log('Message sent:', message);
+                              setMessage('');
+                            }
+                          }}
+                          className="space-y-3"
+                        >
+                          <div className="relative">
+                            <Input
+                              type="text"
+                              placeholder="Ask a follow-up question..."
+                              className="w-full bg-white/5 border-white/20 text-white placeholder:text-white/50 focus-visible:ring-primary focus-visible:ring-offset-0 pr-10"
+                              value={message}
+                              onChange={(e) => setMessage(e.target.value)}
+                            />
+                            <Button
+                              type="submit"
+                              size="icon"
+                              variant="ghost"
+                              className="absolute right-0 top-0 h-full px-3 text-white/70 hover:text-white"
+                              disabled={!message.trim()}
+                            >
+                              <Send className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </form>
+                      </div>
                     </CardContent>
                   </Card>
                 </TabsContent>
@@ -188,52 +260,6 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
                   )}
                 </TabsContent>
               </Tabs>
-
-              <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-border"
-              style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
-                backdropFilter: 'blur(16px) saturate(180%)',
-                WebkitBackdropFilter: 'blur(16px) saturate(180%)',
-                borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                boxShadow: '0 -4px 16px 0 rgba(31, 38, 135, 0.1)'
-              }}>
-                <div className="flex items-center justify-between max-w-md mx-auto">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={toggleSpeaking}
-                    disabled={isMuted}
-                    data-testid="button-toggle-speaking"
-                  >
-                    {isSpeaking ? (
-                      <>
-                        <Pause className="h-4 w-4 mr-2" />
-                        Pause
-                      </>
-                    ) : (
-                      <>
-                        <Play className="h-4 w-4 mr-2" />
-                        Play
-                      </>
-                    )}
-                  </Button>
-                  
-                  {isSpeaking && (
-                    <div className="flex items-center gap-1" data-testid="audio-waveform">
-                      {[...Array(5)].map((_, i) => (
-                        <div
-                          key={i}
-                          className="w-1 bg-primary rounded-full animate-pulse-glow"
-                          style={{
-                            height: `${Math.random() * 20 + 10}px`,
-                            animationDelay: `${i * 0.1}s`,
-                          }}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
             </div>
           </motion.div>
         </>
