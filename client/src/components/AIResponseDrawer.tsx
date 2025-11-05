@@ -90,7 +90,7 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed right-0 top-0 bottom-0 w-full md:w-[480px] border-l border-border shadow-2xl z-40 overflow-y-auto"
+            className="fixed right-0 top-0 bottom-0 w-full md:w-[480px] border-l border-border shadow-2xl z-40 flex flex-col"
             style={{
               background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
               backdropFilter: 'blur(16px) saturate(180%)',
@@ -100,7 +100,7 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
             }}
             data-testid="drawer-content"
           >
-            <div className="p-6 space-y-6">
+            <div className="p-6 space-y-6 overflow-y-auto flex-1">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-white" data-testid="text-continent-name">
                   {response.continent ? response.continent.charAt(0).toUpperCase() + response.continent.slice(1) : ''}
@@ -195,39 +195,6 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
                           </div>
                         )}
                       </div>
-                      
-                      <div className="mt-6 pt-4 border-t border-white/10">
-                        <form 
-                          onSubmit={(e) => {
-                            e.preventDefault();
-                            if (message.trim()) {
-                              // Handle message submission here
-                              console.log('Message sent:', message);
-                              setMessage('');
-                            }
-                          }}
-                          className="space-y-3"
-                        >
-                          <div className="relative">
-                            <Input
-                              type="text"
-                              placeholder="Ask a follow-up question..."
-                              className="w-full bg-white/5 border-white/20 text-white placeholder:text-white/50 focus-visible:ring-primary focus-visible:ring-offset-0 pr-10"
-                              value={message}
-                              onChange={(e) => setMessage(e.target.value)}
-                            />
-                            <Button
-                              type="submit"
-                              size="icon"
-                              variant="ghost"
-                              className="absolute right-0 top-0 h-full px-3 text-white/70 hover:text-white"
-                              disabled={!message.trim()}
-                            >
-                              <Send className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </form>
-                      </div>
                     </CardContent>
                   </Card>
                 </TabsContent>
@@ -261,6 +228,40 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
                 </TabsContent>
               </Tabs>
             </div>
+            
+            {/* Fixed input at the bottom - Only show in Overview tab */}
+            {activeTab === 'overview' && (
+              <div className="p-4 border-t border-white/10 bg-transparent backdrop-blur-lg">
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (message.trim()) {
+                      // Handle message submission
+                      console.log('Message sent:', message);
+                      setMessage('');
+                    }
+                  }}
+                  className="flex gap-2"
+                >
+                  <Input
+                    type="text"
+                    placeholder="Ask a follow-up question..."
+                    className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-white/50 focus-visible:ring-white/20 focus-visible:ring-offset-0"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                  <Button 
+                    type="submit" 
+                    size="icon" 
+                    variant="ghost"
+                    className="text-white/70 hover:text-white hover:bg-white/10"
+                    disabled={!message.trim()}
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </form>
+              </div>
+            )}
           </motion.div>
         </>
       )}
