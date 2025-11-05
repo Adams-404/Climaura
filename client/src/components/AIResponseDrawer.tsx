@@ -13,6 +13,8 @@ interface AIResponseDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onQuizAnswer?: (correct: boolean) => void;
+  prompt: string;
+  onPromptChange: (value: string) => void;
 }
 
 interface Message {
@@ -23,11 +25,17 @@ interface Message {
   isTyping?: boolean;
 }
 
-export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AIResponseDrawerProps) {
+export function AIResponseDrawer({ 
+  response, 
+  isOpen, 
+  onClose, 
+  onQuizAnswer, 
+  prompt,
+  onPromptChange 
+}: AIResponseDrawerProps) {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
-  const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentResponse, setCurrentResponse] = useState<AIResponse | null>(null);
@@ -84,18 +92,18 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim() || isLoading) return;
+    if (!prompt.trim() || isLoading) return;
     
     const userMessage: Message = {
       id: Date.now().toString(),
-      content: message,
+      content: prompt,
       isUser: true,
       timestamp: new Date()
     };
     
     // Add user message to chat
     setMessages(prev => [...prev, userMessage]);
-    setMessage('');
+    onPromptChange('');
     setIsLoading(true);
     
     try {
@@ -106,7 +114,7 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          prompt: message,
+          prompt: prompt,
           // Include conversation history for context
           history: messages
             .filter(m => m.isUser || !m.content.startsWith('Sorry, I encountered an error'))
@@ -165,6 +173,13 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage(e);
     }
   };
 
@@ -383,8 +398,9 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
                     type="text"
                     placeholder="Ask a follow-up question..."
                     className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-white/50 focus-visible:ring-white/20 focus-visible:ring-offset-0"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    value={prompt}
+                    onChange={(e) => onPromptChange(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     disabled={isLoading}
                   />
                   <Button 
@@ -392,7 +408,7 @@ export function AIResponseDrawer({ response, isOpen, onClose, onQuizAnswer }: AI
                     size="icon" 
                     variant="ghost"
                     className="text-white/70 hover:text-white hover:bg-white/10"
-                    disabled={!message.trim() || isLoading}
+                    disabled={!prompt.trim() || isLoading}
                   >
                     {isLoading ? (
                       <div className="w-4 h-4 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />

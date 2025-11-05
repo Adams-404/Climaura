@@ -22,6 +22,8 @@ interface PromptInputProps {
   isLoading?: boolean;
   disabled?: boolean;
   showChatButton?: boolean;
+  prompt: string;
+  onPromptChange: (value: string) => void;
 }
 
 export function PromptInput({ 
@@ -29,9 +31,10 @@ export function PromptInput({
   onChatClick, 
   isLoading, 
   disabled, 
-  showChatButton = true 
+  showChatButton = true,
+  prompt,
+  onPromptChange
 }: PromptInputProps) {
-  const [prompt, setPrompt] = useState("");
   
   useEffect(() => {
     return addGlobalStyles();
@@ -41,7 +44,7 @@ export function PromptInput({
     e.preventDefault();
     if (prompt.trim() && !isLoading && !disabled) {
       onSubmit(prompt.trim());
-      setPrompt("");
+      onPromptChange("");
     }
   };
 
@@ -87,7 +90,7 @@ export function PromptInput({
             <div className="relative">
             <Input
               value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
+              onChange={(e) => onPromptChange(e.target.value)}
               placeholder="Ask the Earth anything..."
               disabled={isLoading || disabled}
               className="w-full border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-base pl-14 pr-6 h-16 text-foreground/95 placeholder:text-foreground/50 placeholder:opacity-70"

@@ -91,6 +91,7 @@ export default function Home() {
   const [isPledgeModalOpen, setIsPledgeModalOpen] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [globeRef, setGlobeRef] = useState<any>(null);
+  const [prompt, setPrompt] = useState("");
 
   const promptMutation = useMutation<AIResponse, Error, string>({
     mutationFn: async (prompt: string) => {
@@ -323,15 +324,20 @@ export default function Home() {
         onSubmit={handlePromptSubmit}
         onChatClick={handleOpenAIChat}
         isLoading={promptMutation.isPending}
-        showChatButton={!isDrawerOpen}
+        prompt={prompt}
+        onPromptChange={setPrompt}
       />
 
-      <AIResponseDrawer
-        response={currentResponse}
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        onQuizAnswer={handleQuizAnswer}
-      />
+      {currentResponse && (
+        <AIResponseDrawer
+          response={currentResponse}
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          prompt={prompt}
+          onPromptChange={setPrompt}
+          onQuizAnswer={handleQuizAnswer}
+        />
+      )}
 
       <ClimatePledgeModal
         isOpen={isPledgeModalOpen}
