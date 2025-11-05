@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sparkles, Loader2, MessageCircle } from "lucide-react";
+import { Send, Loader2, MessageCircle } from "lucide-react";
 
 // Add global styles for the glass effect
 const addGlobalStyles = () => {
@@ -110,26 +110,18 @@ export function PromptInput({
           </div>
           
           {/* Submit button aligned with input */}
-          <Button
+          <button
             type="submit"
-            size="icon"
             disabled={!prompt.trim() || isLoading || disabled}
-            className="relative h-14 w-14 rounded-full transition-all duration-200 group/button"
+            className="relative h-14 w-14 flex items-center justify-center text-white/90 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
             data-testid="button-submit-prompt"
-            style={{
-              background: 'rgba(255, 255, 255, 0.03)',
-              backdropFilter: 'blur(16px)',
-              WebkitBackdropFilter: 'blur(16px)',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
-              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)'
-            }}
           >
             {isLoading ? (
               <Loader2 className="h-5 w-5 animate-spin" style={{ opacity: 0.8 }} />
             ) : (
-              <Sparkles className="h-5 w-5" style={{ opacity: 0.9 }} />
+              <Send className="h-5 w-5 text-white" style={{ transform: 'translateX(1px)' }} />
             )}
-          </Button>
+          </button>
           </div>
           
           {/* Very subtle background glow */}
