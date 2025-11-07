@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig(({ mode }) => ({
+  base: './',
   plugins: [react()],
   
   resolve: {
@@ -10,6 +11,16 @@ export default defineConfig(({ mode }) => ({
       '@': path.resolve(__dirname, './src'),
       '@assets': path.resolve(__dirname, './public/assets'),
       '@shared': path.resolve(__dirname, './shared'),
+    },
+  },
+  
+  server: {
+    port: 3000,
+    open: true,
+    historyApiFallback: true,
+    fs: {
+      strict: true,
+      deny: ['**/.*'],
     },
   },
   
@@ -58,15 +69,6 @@ export default defineConfig(({ mode }) => ({
   
   define: {
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(process.env.npm_package_version),
-  },
-  
-  server: {
-    port: 3000,
-    open: true,
-    fs: {
-      strict: true,
-      deny: ['**/.*'],
-    },
   },
   
   preview: {
