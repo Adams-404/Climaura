@@ -1,41 +1,62 @@
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useEffect, useState } from 'react';
-import { Globe2, ZoomIn, ZoomOut, RotateCcw, User } from "lucide-react";
+import { Globe2, ZoomIn, ZoomOut, RotateCcw, User, Eye, EyeOff } from "lucide-react";
 
 interface NavigationBarProps {
   onZoomIn?: () => void;
   onZoomOut?: () => void;
   onReset?: () => void;
+  onToggleMarkers?: (show: boolean) => void;
+  showMarkers?: boolean;
 }
 
-export function NavigationBar({ onZoomIn: propOnZoomIn, onZoomOut: propOnZoomOut, onReset: propOnReset }: NavigationBarProps) {
+export function NavigationBar({ 
+  onZoomIn: propOnZoomIn, 
+  onZoomOut: propOnZoomOut, 
+  onReset: propOnReset,
+  onToggleMarkers: propOnToggleMarkers,
+  showMarkers: propShowMarkers = true
+}: NavigationBarProps) {
   
   // Default handlers that do nothing if not overridden
   const [handlers, setHandlers] = useState({
     onZoomIn: propOnZoomIn || (() => {}),
     onZoomOut: propOnZoomOut || (() => {}),
-    onReset: propOnReset || (() => {})
+    onReset: propOnReset || (() => {}),
+    onToggleMarkers: propOnToggleMarkers || ((show: boolean) => {})
   });
+  
+  const [showMarkers, setShowMarkers] = useState(propShowMarkers);
+  
+  const toggleMarkers = () => {
+    const newValue = !showMarkers;
+    setShowMarkers(newValue);
+    handlers.onToggleMarkers(newValue);
+  };
   
   // If props change, update the handlers
   useEffect(() => {
-    setHandlers({
+    setHandlers(prev => ({
+      ...prev,
       onZoomIn: propOnZoomIn || (() => {}),
       onZoomOut: propOnZoomOut || (() => {}),
-      onReset: propOnReset || (() => {})
-    });
+      onReset: propOnReset || (() => {}),
+      onToggleMarkers: propOnToggleMarkers || ((show: boolean) => {})
+    }));
   }, [propOnZoomIn, propOnZoomOut, propOnReset]);
   
   // Listen for globe handlers from the Globe component
   useEffect(() => {
     const handleSetGlobeHandlers = (event: CustomEvent) => {
-      const { handleZoomIn, handleZoomOut, handleReset } = event.detail;
-      setHandlers({
-        onZoomIn: handleZoomIn,
-        onZoomOut: handleZoomOut,
-        onReset: handleReset
-      });
+      const { handleZoomIn, handleZoomOut, handleReset, handleToggleMarkers } = event.detail;
+      setHandlers(prev => ({
+        ...prev,
+        onZoomIn: handleZoomIn || prev.onZoomIn,
+        onZoomOut: handleZoomOut || prev.onZoomOut,
+        onReset: handleReset || prev.onReset,
+        onToggleMarkers: handleToggleMarkers || prev.onToggleMarkers
+      }));
     };
     
     // Add event listener
@@ -91,10 +112,40 @@ export function NavigationBar({ onZoomIn: propOnZoomIn, onZoomOut: propOnZoomOut
             }}>
               Climaura
             </h1>
+            
           </div>
 
-          <div className="flex items-center gap-2">
-          <TooltipProvider>
+          <div className="flex items-center gap-1">
+            <TooltipProvider>
+              {/* Markers Toggle */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={toggleMarkers}
+                    className="h-9 w-9 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+                    data-testid="toggle-markers"
+                    style={{
+                      backdropFilter: 'blur(8px)',
+                      WebkitBackdropFilter: 'blur(8px)',
+                      border: '1px solid rgba(255, 255, 255, 0.05)'
+                    }}
+                  >
+                    {showMarkers ? (
+                      <Eye className="h-4 w-4" />
+                    ) : (
+                      <EyeOff className="h-4 w-4" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>{showMarkers ? 'Hide Markers' : 'Show Markers'}</p>
+                </TooltipContent>
+              </Tooltip>
+              
+              {/* Separator */}
+              <div className="h-6 w-px bg-white/20 mx-1" />
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button

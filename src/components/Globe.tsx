@@ -250,8 +250,13 @@ export function GlobeComponent({
   onCountryClick, 
   focusContinent,
   className, 
-  onGlobeReady 
-}: Omit<GlobeComponentProps, 'onContinentClick'>) {
+  onGlobeReady,
+  showMarkers: externalShowMarkers = true,
+  onToggleMarkers: externalOnToggleMarkers
+}: Omit<GlobeComponentProps, 'onContinentClick'> & { 
+  showMarkers?: boolean; 
+  onToggleMarkers?: (show: boolean) => void 
+}) {
   useEffect(() => {
     const cleanup = addGlobalStyles();
     return () => cleanup();
@@ -278,7 +283,21 @@ export function GlobeComponent({
   }, [focusContinent]);
   const [isAutoRotating, setIsAutoRotating] = useState(true);
   const [hoveredCountry, setHoveredCountry] = useState<CountryMarker | null>(null);
-  const [showMarkers, setShowMarkers] = useState(false);
+  const [showMarkers, setShowMarkers] = useState(externalShowMarkers);
+  
+  // Sync with external showMarkers prop
+  useEffect(() => {
+    setShowMarkers(externalShowMarkers);
+  }, [externalShowMarkers]);
+  
+  // Toggle markers handler
+  const toggleMarkers = () => {
+    const newValue = !showMarkers;
+    setShowMarkers(newValue);
+    if (externalOnToggleMarkers) {
+      externalOnToggleMarkers(newValue);
+    }
+  };
 
   // Helper function to get color for a continent
   const getContinentColor = (continent: string): string => {
@@ -346,7 +365,7 @@ export function GlobeComponent({
     const navBar = document.getElementById('navigation-bar');
     if (navBar) {
       navBar.dispatchEvent(new CustomEvent('setGlobeHandlers', {
-        detail: { handleZoomIn, handleZoomOut, handleReset }
+        detail: { handleZoomIn, handleZoomOut, handleReset, handleToggleMarkers: toggleMarkers }
       }));
     }
   }, []);
@@ -362,53 +381,6 @@ export function GlobeComponent({
         height: '100%',
       }}
     >
-      <div className="absolute top-4 right-4 z-10 flex gap-2">
-        <div className="relative group">
-          {/* Subtle moving highlight */}
-          <div 
-            className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-300 pointer-events-none rounded-full"
-            style={{
-              background: `linear-gradient(
-                45deg,
-                transparent 40%,
-                rgba(255, 255, 255, 0.4) 48%,
-                rgba(255, 255, 255, 0.7) 50%,
-                rgba(255, 255, 255, 0.4) 52%,
-                transparent 60%
-              )`,
-              backgroundSize: '200% 100%',
-              animation: 'shimmer 3s infinite',
-              borderRadius: '9999px',
-            }}
-          />
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setShowMarkers(!showMarkers)}
-            className="relative overflow-hidden group-hover:bg-white/10 transition-all duration-200"
-            style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
-              backdropFilter: 'blur(16px) saturate(180%)',
-              WebkitBackdropFilter: 'blur(16px) saturate(180%)',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
-              borderRadius: '9999px',
-              boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.1)'
-            }}
-        >
-            {showMarkers ? (
-              <>
-                <EyeOff className="mr-2 h-4 w-4" />
-                Hide Markers
-              </>
-            ) : (
-              <>
-                <Eye className="mr-2 h-4 w-4" />
-                Show Markers
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
       <Globe
         ref={globeEl}
         globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"

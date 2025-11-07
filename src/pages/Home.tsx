@@ -97,6 +97,7 @@ export default function Home() {
   const [showWelcome, setShowWelcome] = useState(true);
   const [globeRef, setGlobeRef] = useState<any>(null);
   const [prompt, setPrompt] = useState("");
+  const [showMarkers, setShowMarkers] = useState(false);
 
   const promptMutation = useMutation<AIResponse, Error, string>({
     mutationFn: generateAIResponse,
@@ -194,6 +195,8 @@ export default function Home() {
             );
           }
         }}
+        onToggleMarkers={setShowMarkers}
+        showMarkers={showMarkers}
       />
 
       <div className="absolute inset-0">
@@ -221,6 +224,8 @@ export default function Home() {
           <GlobeComponent
             focusContinent={focusContinent}
             className="w-full h-full"
+            showMarkers={showMarkers}
+            onToggleMarkers={setShowMarkers}
             onGlobeReady={(globe) => {
               setGlobeRef(globe);
               if (globe) {
