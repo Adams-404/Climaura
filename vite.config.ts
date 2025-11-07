@@ -3,8 +3,16 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? './' : '/',
+  // For Vercel deployment, use absolute paths
+  base: '/',
   plugins: [react()],
+  
+  // Ensure proper module resolution
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'es2020',
+    },
+  },
   
   resolve: {
     alias: {
@@ -28,15 +36,21 @@ export default defineConfig(({ mode }) => ({
     },
   },
   
+  // Build configuration
   build: {
+    target: 'es2020',
     outDir: 'dist',
+    assetsDir: 'assets',
     sourcemap: mode !== 'production',
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
+          // Core libraries
+          react: ['react', 'react-dom', 'react-router-dom'],
+          // AI related dependencies
           ai: ['@google/generative-ai', 'openai'],
+          // UI components
           ui: [
             '@radix-ui/react-accordion',
             '@radix-ui/react-alert-dialog',
@@ -67,6 +81,10 @@ export default defineConfig(({ mode }) => ({
             '@radix-ui/react-tooltip',
           ],
         },
+        // Optimize chunking strategy
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: 'assets/[ext]/[name]-[hash][extname]',
       },
     },
   },
