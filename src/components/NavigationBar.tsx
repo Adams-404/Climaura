@@ -24,7 +24,7 @@ export function NavigationBar({
     onZoomIn: propOnZoomIn || (() => {}),
     onZoomOut: propOnZoomOut || (() => {}),
     onReset: propOnReset || (() => {}),
-    onToggleMarkers: propOnToggleMarkers || ((show: boolean) => {})
+    onToggleMarkers: propOnToggleMarkers || (() => {})
   });
   
   const [showMarkers, setShowMarkers] = useState(propShowMarkers);
@@ -42,9 +42,9 @@ export function NavigationBar({
       onZoomIn: propOnZoomIn || (() => {}),
       onZoomOut: propOnZoomOut || (() => {}),
       onReset: propOnReset || (() => {}),
-      onToggleMarkers: propOnToggleMarkers || ((show: boolean) => {})
+      onToggleMarkers: propOnToggleMarkers || (() => {})
     }));
-  }, [propOnZoomIn, propOnZoomOut, propOnReset]);
+  }, [propOnZoomIn, propOnZoomOut, propOnReset, propOnToggleMarkers]);
   
   // Listen for globe handlers from the Globe component
   useEffect(() => {

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import Globe from "react-globe.gl";
+import { useEffect, useRef, useState, useCallback } from 'react';
+import Globe from 'react-globe.gl';
 import type { ContinentKey } from "@/types/schema";
 import { Eye, EyeOff } from "lucide-react";
 
