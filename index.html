@@ -16,5 +16,13 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // This helps with SPA routing in development
+      if (import.meta.hot) {
+        import.meta.hot.on('vite:beforeFullReload', () => {
+          console.log('Full reload detected');
+        });
+      }
+    </script>
   </body>
 </html>

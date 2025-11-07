@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig(({ mode }) => ({
-  base: './',
+  base: mode === 'production' ? './' : '/',
   plugins: [react()],
   
   resolve: {
@@ -17,7 +17,11 @@ export default defineConfig(({ mode }) => ({
   server: {
     port: 3000,
     open: true,
-    historyApiFallback: true,
+    strictPort: true,
+    host: true,
+    historyApiFallback: {
+      disableDotRule: true,
+    },
     fs: {
       strict: true,
       deny: ['**/.*'],
