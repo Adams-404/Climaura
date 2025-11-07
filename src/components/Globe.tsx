@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Globe from 'react-globe.gl';
 import type { ContinentKey } from "@/types/schema";
-import { Eye, EyeOff } from "lucide-react";
 
 // Add global styles for the shimmer effect
 const addGlobalStyles = () => {
@@ -20,7 +19,6 @@ const addGlobalStyles = () => {
   document.head.appendChild(style);
   return () => style.remove();
 };
-import { Button } from "./ui/button";
 
 // Continent colors for consistent theming
 const CONTINENT_COLORS: Record<string, string> = {
