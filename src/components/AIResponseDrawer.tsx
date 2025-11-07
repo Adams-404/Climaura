@@ -5,8 +5,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { X, Volume2, VolumeX, Play, Pause, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
-import type { AIResponse } from "@shared/schema";
 import { ClimateDataChart } from "./ClimateDataChart";
+import { generateAIResponse } from "@/lib/aiService";
+
+// Define the AIResponse interface locally to avoid conflicts
+export interface AIResponse {
+  text: string;
+  continent: string;
+  quiz?: {
+    question: string;
+    options: string[];
+    correctIndex?: number;
+  };
+  relatedData?: any; // Define a more specific type if needed
+}
 
 interface AIResponseDrawerProps {
   response: AIResponse | null;
@@ -65,13 +77,16 @@ export function AIResponseDrawer({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
   
-  const Typewriter = useCallback(({ text, onComplete }: { text: string, onComplete?: () => void }) => {
+  const Typewriter = useCallback(({ text = '', onComplete }: { text?: string, onComplete?: () => void }) => {
     const [displayText, setDisplayText] = useState('');
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isComplete, setIsComplete] = useState(false);
 
+    // Ensure text is always a string
+    const safeText = typeof text === 'string' ? text : '';
+
     useEffect(() => {
-      if (currentIndex >= text.length) {
+      if (currentIndex >= safeText.length) {
         if (!isComplete) {
           setIsComplete(true);
           onComplete?.();
@@ -80,8 +95,14 @@ export function AIResponseDrawer({
       }
 
       const timeout = setTimeout(() => {
-        setDisplayText(prev => prev + text[currentIndex]);
-        setCurrentIndex(prev => prev + 1);
+        if (safeText[currentIndex] !== undefined) {
+          setDisplayText(prev => prev + safeText[currentIndex]);
+          setCurrentIndex(prev => prev + 1);
+        } else {
+          // If we somehow get here, complete the animation
+          setIsComplete(true);
+          onComplete?.();
+        }
       }, 10); // Adjust typing speed here (lower = faster)
 
       return () => clearTimeout(timeout);
@@ -107,33 +128,15 @@ export function AIResponseDrawer({
     setIsLoading(true);
     
     try {
-      // Send message to the existing prompt endpoint
-      const response = await fetch('/api/prompt', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          prompt: prompt,
-          // Include conversation history for context
-          history: messages
-            .filter(m => m.isUser || !m.content.startsWith('Sorry, I encountered an error'))
-            .map(m => ({
-              role: m.isUser ? 'user' : 'assistant',
-              content: m.content
-            }))
-        }),
-      });
+      // Use the aiService directly
+      const data = await generateAIResponse(prompt);
       
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to get response');
-      }
-      
-      const data = await response.json();
-      
-      if (!data || typeof data.text !== 'string') {
-        throw new Error('Invalid response format');
+      // If we got a response, update the current response
+      if (data) {
+        setCurrentResponse((prev: AIResponse | null) => ({
+          ...(prev || {} as AIResponse),
+          ...data
+        } as AIResponse));
       }
       
       // Add AI response to chat with typing effect

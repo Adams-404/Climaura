@@ -1,5 +1,5 @@
-import { useState, Suspense, lazy } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useState, Suspense, lazy, useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { NavigationBar } from "@/components/NavigationBar";
 import { PromptInput } from "@/components/PromptInput";
 import { AIResponseDrawer } from "@/components/AIResponseDrawer";
@@ -7,10 +7,11 @@ import { ClimatePledgeModal } from "@/components/ClimatePledgeModal";
 import { LoadingState } from "@/components/LoadingState";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useEffect } from 'react';
-import { aiResponseSchema } from "@shared/schema";
-import type { AIResponse, ContinentKey, InsertPledge } from "@shared/schema";
+import { queryClient } from "@/lib/queryClient";
+import { generateAIResponse, savePledge, type AIResponse } from "@/lib/aiService";
+
+type ContinentKey = 'Africa' | 'Antarctica' | 'Asia' | 'Europe' | 'North America' | 'South America' | 'Australia' | 'Global';
+type InsertPledge = any; // Define proper type based on your needs
 
 const GlobeComponent = lazy(() =>
   import("@/components/Globe").then((module) => ({
@@ -94,47 +95,7 @@ export default function Home() {
   const [prompt, setPrompt] = useState("");
 
   const promptMutation = useMutation<AIResponse, Error, string>({
-    mutationFn: async (prompt: string) => {
-      try {
-        const response = await apiRequest("POST", "/api/prompt", { prompt });
-        const responseData = await response.json();
-        
-        // Check if the response is an error
-        if (responseData && responseData.error) {
-          throw new Error(responseData.message || 'Error processing your request');
-        }
-        
-        // Ensure we have the required fields
-        if (!responseData || typeof responseData.text !== 'string' || !responseData.continent) {
-          console.error('Invalid response structure:', responseData);
-          throw new Error('Invalid response from server');
-        }
-        
-        // Create a properly formatted response object
-        const formattedResponse: AIResponse = {
-          text: responseData.text,
-          continent: responseData.continent,
-          relatedData: responseData.relatedData,
-          quiz: responseData.quiz ? {
-            id: responseData.quiz.id,
-            question: responseData.quiz.question,
-            options: responseData.quiz.options || []
-          } : undefined
-        };
-        
-        // Validate against the schema
-        const result = aiResponseSchema.safeParse(formattedResponse);
-        if (!result.success) {
-          console.error('Schema validation failed:', result.error);
-          throw new Error('Invalid response format from server');
-        }
-        
-        return result.data;
-      } catch (error) {
-        console.error('Error in mutationFn:', error);
-        throw error instanceof Error ? error : new Error('An unknown error occurred');
-      }
-    },
+    mutationFn: generateAIResponse,
     onSuccess: (data) => {
       setCurrentResponse(data);
       setFocusContinent(data.continent as ContinentKey);
@@ -145,7 +106,7 @@ export default function Home() {
 
   const pledgeMutation = useMutation({
     mutationFn: async (pledge: InsertPledge) => {
-      return apiRequest("POST", "/api/pledges", pledge);
+      return savePledge(pledge);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/pledges"] });
@@ -173,8 +134,16 @@ export default function Home() {
     setCurrentResponse({
       text: "Hello! I'm your climate assistant. Ask me anything about climate change, its impact on different regions, or how you can make a difference. I'm here to help you understand and take action on climate change.",
       continent: 'global',
-      relatedData: undefined,
-      quiz: undefined
+      quiz: {
+        question: 'What is the main cause of climate change?',
+        options: [
+          'Human activities that release greenhouse gases',
+          'Natural climate cycles',
+          'Changes in the Earth\'s orbit',
+          'Volcanic activity'
+        ],
+        correctIndex: 0
+      }
     });
     setIsDrawerOpen(true);
     setShowWelcome(false);
