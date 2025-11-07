@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Send, Loader2, MessageCircle } from "lucide-react";
 

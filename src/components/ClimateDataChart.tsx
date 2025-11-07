@@ -1,12 +1,44 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import type { ClimateData } from "@shared/schema";
+import type { ClimateData } from "@/types/schema";
+
+interface ChartDataPoint {
+  year: number;
+  co2: number;
+  temperature: number;
+  seaLevel: number;
+  renewable: number;
+}
 
 interface ClimateDataChartProps {
   data: ClimateData;
 }
 
+function transformToChartData(climateData: ClimateData): ChartDataPoint[] {
+  const years = new Set<number>([
+    ...climateData.yearlyData.co2.map(d => d.year),
+    ...climateData.yearlyData.temperature.map(d => d.year),
+    ...climateData.yearlyData.seaLevel.map(d => d.year)
+  ]);
+
+  return Array.from(years).sort().map(year => {
+    const co2Data = climateData.yearlyData.co2.find(d => d.year === year);
+    const tempData = climateData.yearlyData.temperature.find(d => d.year === year);
+    const seaLevelData = climateData.yearlyData.seaLevel.find(d => d.year === year);
+    
+    return {
+      year,
+      co2: co2Data?.value ?? 0,
+      temperature: tempData?.value ?? 0,
+      seaLevel: seaLevelData?.value ?? 0,
+      renewable: 0 // Placeholder for renewable data if needed
+    };
+  });
+}
+
 export function ClimateDataChart({ data }: ClimateDataChartProps) {
+  const chartData = transformToChartData(data);
+  
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -56,7 +88,7 @@ export function ClimateDataChart({ data }: ClimateDataChartProps) {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data.yearlyData}>
+            <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
               <XAxis 
                 dataKey="year" 
@@ -75,6 +107,12 @@ export function ClimateDataChart({ data }: ClimateDataChartProps) {
                   padding: '12px',
                 }}
                 labelStyle={{ color: 'hsl(var(--foreground))' }}
+                formatter={(value: number, name: string) => {
+                  const suffix = name === 'temperature' ? '°C' : 
+                                name === 'co2' ? ' MT' : 
+                                name === 'seaLevel' ? ' mm' : '';
+                  return [`${value.toFixed(1)}${suffix}`, name];
+                }}
               />
               <Legend />
               <Line 
@@ -87,7 +125,7 @@ export function ClimateDataChart({ data }: ClimateDataChartProps) {
               />
               <Line 
                 type="monotone" 
-                dataKey="temp" 
+                dataKey="temperature" 
                 stroke="hsl(var(--chart-2))" 
                 strokeWidth={2}
                 name="Temp (°C)"
@@ -95,7 +133,7 @@ export function ClimateDataChart({ data }: ClimateDataChartProps) {
               />
               <Line 
                 type="monotone" 
-                dataKey="renewable" 
+                dataKey="seaLevel" 
                 stroke="hsl(var(--chart-3))" 
                 strokeWidth={2}
                 name="Renewable (%)"

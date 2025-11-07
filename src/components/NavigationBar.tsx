@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useEffect, useState, useCallback } from 'react';
-import { Globe2, ZoomIn, ZoomOut, RotateCcw, Settings, User } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { Globe2, ZoomIn, ZoomOut, RotateCcw, User } from "lucide-react";
 
 interface NavigationBarProps {
   onZoomIn?: () => void;
@@ -10,8 +10,6 @@ interface NavigationBarProps {
 }
 
 export function NavigationBar({ onZoomIn: propOnZoomIn, onZoomOut: propOnZoomOut, onReset: propOnReset }: NavigationBarProps) {
-  // Theme functionality - to be implemented later
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   
   // Default handlers that do nothing if not overridden
   const [handlers, setHandlers] = useState({
@@ -50,18 +48,8 @@ export function NavigationBar({ onZoomIn: propOnZoomIn, onZoomOut: propOnZoomOut
 
   // Keep theme initialization for future use
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' || 'dark';
-    setTheme(savedTheme);
-    document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    // Theme effect logic can be added here
   }, []);
-
-  // Keep theme toggle function for future use
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
-  };
 
   return (
     <div id="navigation-bar" className="fixed top-4 left-1/2 -translate-x-1/2 z-30 w-full max-w-3xl px-4">

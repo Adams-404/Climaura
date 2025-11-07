@@ -4,8 +4,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { X, Share2, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import confetti from "canvas-confetti";
-import type { InsertPledge } from "@shared/schema";
+// @ts-ignore - Missing types for canvas-confetti
+import confetti from 'canvas-confetti';
+import type { InsertPledge } from "@/types/schema";
 
 interface ClimatePledgeModalProps {
   isOpen: boolean;
@@ -27,10 +28,15 @@ export function ClimatePledgeModal({ isOpen, onClose, onSubmit, continent }: Cli
 
   const handleSubmit = () => {
     if (pledgeText.trim()) {
-      onSubmit({
-        text: pledgeText.trim(),
-        continent,
-      });
+      const pledgeData: InsertPledge = {
+        pledge: pledgeText.trim(),
+        name: 'Anonymous', // Default name since it's required by the interface
+        email: '', // Default empty email since it's required by the interface
+        country: continent || 'Global', // Use continent as country or default to 'Global'
+        createdAt: new Date().toISOString()
+      };
+      
+      onSubmit(pledgeData);
       setSubmitted(true);
       
       confetti({

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { X, Volume2, VolumeX, Play, Pause, Send } from "lucide-react";
+import { X, Volume2, VolumeX, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import { ClimateDataChart } from "./ClimateDataChart";
@@ -45,8 +45,11 @@ export function AIResponseDrawer({
   prompt,
   onPromptChange 
 }: AIResponseDrawerProps) {
-  const [isSpeaking, setIsSpeaking] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  // isSpeaking is used in the speak() and stopSpeaking() functions
+  // to track speech synthesis status via event handlers
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setIsSpeaking] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -208,14 +211,6 @@ export function AIResponseDrawer({
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
-    }
-  };
-
-  const toggleSpeaking = () => {
-    if (isSpeaking) {
-      stopSpeaking();
-    } else if (response) {
-      speakText(response.text);
     }
   };
 

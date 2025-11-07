@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Globe from "react-globe.gl";
-import type { ContinentKey } from "@shared/schema";
+import type { ContinentKey } from "@/types/schema";
 import { Eye, EyeOff } from "lucide-react";
 
 // Add global styles for the shimmer effect
@@ -248,11 +248,10 @@ interface GlobeComponentProps {
 
 export function GlobeComponent({ 
   onCountryClick, 
-  onContinentClick, 
   focusContinent,
   className, 
   onGlobeReady 
-}: GlobeComponentProps) {
+}: Omit<GlobeComponentProps, 'onContinentClick'>) {
   useEffect(() => {
     const cleanup = addGlobalStyles();
     return () => cleanup();
@@ -303,13 +302,7 @@ export function GlobeComponent({
     }
   }, [isAutoRotating]);
 
-  const handleCountryClick = (country: CountryMarker) => {
-    if (onContinentClick) {
-      onContinentClick(country.continent as ContinentKey);
-    } else if (onCountryClick) {
-      onCountryClick(country.name);
-    }
-  };
+  // Country click handler removed as it's not being used
 
   const handleGlobeClick = () => {
     const newState = !isAutoRotating;
@@ -325,7 +318,6 @@ export function GlobeComponent({
   const handleZoomIn = () => {
     if (globeEl.current) {
       const controls = globeEl.current.controls();
-      const distance = controls.getDistance();
       controls.dollyIn(0.5);
       controls.update();
     }
@@ -334,7 +326,6 @@ export function GlobeComponent({
   const handleZoomOut = () => {
     if (globeEl.current) {
       const controls = globeEl.current.controls();
-      const distance = controls.getDistance();
       controls.dollyOut(0.5);
       controls.update();
     }

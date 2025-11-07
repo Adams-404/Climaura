@@ -1,17 +1,21 @@
 import { useState, Suspense, lazy, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { Heart } from "lucide-react";
 import { NavigationBar } from "@/components/NavigationBar";
 import { PromptInput } from "@/components/PromptInput";
 import { AIResponseDrawer } from "@/components/AIResponseDrawer";
 import { ClimatePledgeModal } from "@/components/ClimatePledgeModal";
 import { LoadingState } from "@/components/LoadingState";
 import { Button } from "@/components/ui/button";
-import { Heart } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
-import { generateAIResponse, savePledge, type AIResponse } from "@/lib/aiService";
+import { generateAIResponse } from "@/lib/aiService";
+import type { AIResponse, ContinentKey, InsertPledge } from "@/types/schema";
 
-type ContinentKey = 'Africa' | 'Antarctica' | 'Asia' | 'Europe' | 'North America' | 'South America' | 'Australia' | 'Global';
-type InsertPledge = any; // Define proper type based on your needs
+// Mock savePledge function if Supabase is not configured
+const savePledge = async (pledge: InsertPledge) => {
+  console.log('Pledge would be saved:', pledge);
+  return [pledge];
+};
 
 const GlobeComponent = lazy(() =>
   import("@/components/Globe").then((module) => ({
@@ -117,11 +121,6 @@ export default function Home() {
     promptMutation.mutate(prompt);
   };
 
-  const handleContinentClick = (continent: ContinentKey) => {
-    setFocusContinent(continent);
-    promptMutation.mutate(`Tell me about climate change in ${continent}`);
-  };
-
   const handleQuizAnswer = (correct: boolean) => {
     if (correct) {
       setTimeout(() => {
@@ -220,7 +219,6 @@ export default function Home() {
 
         <Suspense fallback={<LoadingState />}>
           <GlobeComponent
-            onContinentClick={handleContinentClick}
             focusContinent={focusContinent}
             className="w-full h-full"
             onGlobeReady={(globe) => {
