@@ -108,7 +108,6 @@ User question: ${prompt}`;
 
       // Map the response to our AIResponse interface
       const responseContent = responseDataToUse.response || responseDataToUse.text || '';
-      const continent = (responseDataToUse.continent || 'global').toLowerCase();
       const quizQuestion = responseDataToUse.quizQuestion || responseDataToUse.quiz?.question;
       let quizOptions = responseDataToUse.quizOptions || responseDataToUse.quiz?.options || [];
       
