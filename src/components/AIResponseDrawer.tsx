@@ -374,7 +374,6 @@ export function AIResponseDrawer({
                   {displayResponse.quiz ? (
                     <QuizCard 
                       quiz={displayResponse.quiz} 
-                      continent={displayResponse.continent}
                       onAnswer={onQuizAnswer} 
                     />
                   ) : (
@@ -429,41 +428,55 @@ interface QuizCardProps {
     id?: string;
     question: string;
     options: string[];
+    correctIndex?: number;
+    explanation?: string;
   };
-  continent: string;
   onAnswer?: (correct: boolean) => void;
 }
 
-function QuizCard({ quiz, continent, onAnswer }: QuizCardProps) {
+function QuizCard({ quiz, onAnswer }: QuizCardProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [correctIndex, setCorrectIndex] = useState<number | null>(null);
   const [explanation, setExplanation] = useState<string>("");
   const [isValidating, setIsValidating] = useState(false);
 
-  const handleAnswer = async (index: number) => {
-    setSelectedIndex(index);
+  const handleAnswer = async (selectedOptionIndex: number) => {
+    if (selectedOptionIndex < 0 || selectedOptionIndex >= (quiz.options?.length || 0)) {
+      console.error('Invalid option index selected');
+      return;
+    }
+
+    setSelectedIndex(selectedOptionIndex);
     setIsValidating(true);
+    setShowResult(true);
 
     try {
-      const response = await fetch("/api/quiz/validate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          continent: continent,
-          selectedIndex: index,
-        }),
-      });
-
-      const result = await response.json();
-      setCorrectIndex(result.correctIndex);
-      setExplanation(result.explanation || "");
-      setShowResult(true);
-      onAnswer?.(result.correct);
+      // Ensure we have a valid correct index (default to 0 if not set or invalid)
+      const correctIdx = typeof quiz.correctIndex === 'number' && 
+                        quiz.correctIndex >= 0 && 
+                        quiz.correctIndex < (quiz.options?.length || 0)
+                      ? quiz.correctIndex
+                      : 0;
+      
+      const isCorrect = selectedOptionIndex === correctIdx;
+      
+      // Update state with the correct index for UI feedback
+      setCorrectIndex(correctIdx);
+      
+      // Generate appropriate feedback message
+      if (isCorrect) {
+        setExplanation("Correct! Great job!");
+      } else {
+        const correctAnswer = quiz.options?.[correctIdx] || 'the correct answer';
+        setExplanation(`Not quite. The correct answer is: ${correctAnswer}`);
+      }
+      
+      // Notify parent component if callback is provided
+      onAnswer?.(isCorrect);
     } catch (error) {
-      console.error("Error validating quiz:", error);
-      setShowResult(true);
-      setExplanation("Error validating answer. Please try again.");
+      console.error("Error processing quiz answer:", error);
+      setExplanation("Error processing your answer. Please try again.");
     } finally {
       setIsValidating(false);
     }
