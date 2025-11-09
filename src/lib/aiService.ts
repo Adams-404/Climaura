@@ -51,27 +51,30 @@ User question: ${prompt}`;
     const response = await result.response;
     let responseText = response.text().trim();
     
-    // Remove markdown code block markers if present
-    if (responseText.startsWith('```json')) {
-      responseText = responseText.replace(/^```json\n|```$/g, '').trim();
-    } else if (responseText.startsWith('```')) {
-      responseText = responseText.replace(/^```\n|```$/g, '').trim();
-    }
+    let responseDataToUse;
     
+    // First, try to parse the response as JSON
     try {
-      // First, try to parse the response as JSON
-      let responseDataToUse;
+      // Remove markdown code block markers if present
+      let cleanResponseText = responseText;
+      if (cleanResponseText.startsWith('```json')) {
+        cleanResponseText = cleanResponseText.replace(/^```json\n|```$/g, '').trim();
+      } else if (cleanResponseText.startsWith('```')) {
+        cleanResponseText = cleanResponseText.replace(/^```\n|```$/g, '').trim();
+      }
+      
+      // Try to parse the response as JSON
       try {
-        // Check if the response is a string that contains JSON
-        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+        // Check if the response contains a JSON object
+        const jsonMatch = cleanResponseText.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           responseDataToUse = JSON.parse(jsonMatch[0]);
         } else {
           // If no JSON object found, try to parse the whole response
-          responseDataToUse = JSON.parse(responseText);
+          responseDataToUse = JSON.parse(cleanResponseText);
         }
         
-        // If we still have a string, try to parse it again (in case of double-encoded JSON)
+        // If we still have a string, it might be double-encoded JSON
         if (typeof responseDataToUse === 'string') {
           try {
             responseDataToUse = JSON.parse(responseDataToUse);
@@ -85,14 +88,27 @@ User question: ${prompt}`;
         }
       } catch (parseError) {
         console.error('Error parsing JSON response:', parseError);
-        // If JSON parsing fails, return the raw text
+        console.log('Response text was:', responseText);
+        
+        // If JSON parsing fails, try to extract any text content
+        let fallbackText = responseText;
+        // Try to clean up the response to get just the text
+        const textMatch = responseText.match(/"response"\s*:\s*"([^"]+)"/i) || 
+                         responseText.match(/"text"\s*:\s*"([^"]+)"/i);
+        
+        if (textMatch && textMatch[1]) {
+          fallbackText = textMatch[1];
+        }
+        
         return {
-          text: responseText,
+          text: fallbackText,
           continent: 'global'
         };
       }
 
       // Map the response to our AIResponse interface
+      const responseContent = responseDataToUse.response || responseDataToUse.text || '';
+      const continent = (responseDataToUse.continent || 'global').toLowerCase();
       const quizQuestion = responseDataToUse.quizQuestion || responseDataToUse.quiz?.question;
       let quizOptions = responseDataToUse.quizOptions || responseDataToUse.quiz?.options || [];
       
@@ -115,8 +131,9 @@ User question: ${prompt}`;
         : (responseDataToUse.quiz?.correctIndex || 0);
       
       // Ensure we have a valid response object
+      // Log the response data for debugging
       const responseData = {
-        text: responseDataToUse.text || responseText,
+        text: responseContent,
         continent: responseDataToUse.continent || 'global',
         ...(quizQuestion && {
           quiz: {
@@ -130,14 +147,14 @@ User question: ${prompt}`;
         })
       };
       
-      console.log('AI Response Data:', responseData); // Debug log
+      console.log('AI Response Data:', responseData);
       return responseData;
     } catch (error) {
       console.error('Failed to parse AI response as JSON:', error);
       console.log('Response text was:', responseText);
       
       // Fallback to text parsing if JSON parsing fails
-      const lines = responseText.split('\n').map((line: string) => line.trim()).filter((line: string) => line);
+      const lines = responseText.split('\n').map((line: string) => line.trim()).filter(Boolean);
       
       // Extract continent (look for a line that contains "continent:")
       let continent = 'global';
